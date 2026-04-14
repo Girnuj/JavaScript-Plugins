@@ -104,7 +104,6 @@
 	 * @returns {jQuery}
 	 */
 	function Plugin(option) {
-		// Si option es undefined, se asigna un objeto vacío
 		option = option || {};
 		/**
 		 * Obtiene y valida las opciones requeridas para el plugin VideoUrlPreview.

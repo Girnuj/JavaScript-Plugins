@@ -25,7 +25,7 @@ Ejemplo actual:
 ```text
 PluginsPublicos/
   VideoUrlPreview/
-    yVideoUrlPreview.js
+    VideoUrlPreview.js
     README.md
     test-video-url-preview.html
 ```

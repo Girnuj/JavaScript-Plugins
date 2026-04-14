@@ -14,7 +14,7 @@ Incluye jQuery y luego el plugin:
 
 ```html
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="./yVideoUrlPreview.js"></script>
+<script src="./VideoUrlPreview.js"></script>
 ```
 
 ## Uso Basico
