@@ -25,6 +25,7 @@ These are automatically initialized when they detect the necessary HTML attribut
 - `InputSwitchFriendly`: displays friendly labels based on a switch/checkbox state.
 - `ChildSelect`: loads dependent options into a child select based on parent select value.
 - `Modal`: opens and closes modals using HTML triggers with `data-*` attributes and optional API.
+- `ModalSteps`: runs step-based modal flows with remote content loading, `POST`/`GET` support, and events to control each stage.
 
 ## General Requirements
 

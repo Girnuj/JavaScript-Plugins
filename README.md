@@ -25,6 +25,7 @@ Estos se inicializan solos al detectar los atributos HTML necesarios, asi que no
 - `InputSwitchFriendly`: muestra etiquetas amigables segun el estado de un switch/checkbox.
 - `ChildSelect`: carga opciones dependientes en un select hijo a partir del valor del select padre.
 - `Modal`: abre y cierra modales usando triggers HTML con atributos `data-*` y API opcional.
+- `ModalSteps`: ejecuta flujos de modal por pasos, con carga remota de contenido, soporte `POST`/`GET` y eventos para controlar cada etapa.
 
 ## Requisitos Generales
 
