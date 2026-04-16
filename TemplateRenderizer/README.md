@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para renderizar plantillas HTML con reemplazo de variables usando `{{propiedad}}`.
 
+## Que viene a solucionar
+
+Resuelve la necesidad de pintar bloques HTML dinamicos con datos sin incorporar motores de plantillas pesados.
+
+## Beneficios
+
+- Render declarativo y ligero en JavaScript nativo.
+- Soporta placeholders simples y rutas anidadas.
+- Facilita prototipos, dashboards y vistas dinamicas.
+- Reduce dependencia de tooling adicional.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `class`, `matchAll`, `Set` y `querySelector`

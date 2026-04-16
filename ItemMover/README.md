@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para mover elementos HTML dentro de una lista o coleccion.
 
+## Que viene a solucionar
+
+Resuelve la necesidad de reordenar elementos en listas sin implementar manualmente logica de nodos y eventos por cada componente.
+
+## Beneficios
+
+- Simplifica el reorder de items con atributos declarativos.
+- Reduce errores al manipular el DOM manualmente.
+- Mejora reutilizacion en listas de tareas, tablas y cards.
+- Mantiene una API uniforme en distintos modulos.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `MutationObserver`, `WeakMap` y `queueMicrotask`

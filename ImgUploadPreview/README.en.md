@@ -2,6 +2,17 @@
 
 Native JavaScript plugin to preview images in an `<img>` from an `<input type="file">`.
 
+## Problem it solves
+
+Avoids trial-and-error uploads by letting users validate the selected image before submitting the form.
+
+## Benefits
+
+- Improves UX with immediate visual feedback.
+- Reduces incorrect file upload mistakes.
+- Removes repetitive `FileReader` boilerplate per view.
+- Integrates quickly through `data-*` attributes.
+
 ## Requirements
 
 - A modern browser with support for `FileReader`, `MutationObserver`, and `WeakMap`

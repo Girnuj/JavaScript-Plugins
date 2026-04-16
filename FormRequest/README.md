@@ -2,11 +2,13 @@
 
 Plugin JavaScript nativo para enviar formularios con `fetch` usando atributos `data-*`, con soporte para respuestas HTML o JSON.
 
-## Aclaracion importante
+## Que viene a solucionar
 
 Con HTML nativo, un formulario con `method` y `action` ya puede enviar datos sin este plugin.
 
-Este plugin aporta una capa adicional para escenarios modernos:
+Este plugin aporta una capa adicional para escenarios modernos.
+
+## Beneficios
 
 - Evitar recarga completa de pagina con envio asincrono por `fetch`.
 - Renderizar respuesta HTML en un target sin codigo repetitivo.
@@ -115,6 +117,14 @@ Para produccion, usa `formRequest.min.js`. Si necesitas depurar, puedes usar `fo
   window.FormRequest.destroyAll(document);
 </script>
 ```
+
+Metodos principales:
+
+- window.FormRequest.init(element, options): crea o reutiliza una instancia del formulario.
+- window.FormRequest.getInstance(element): devuelve la instancia actual o null.
+- window.FormRequest.destroy(element): destruye una instancia concreta.
+- window.FormRequest.initAll(root): inicializa todos los formularios compatibles dentro de un contenedor.
+- window.FormRequest.destroyAll(root): destruye todas las instancias dentro de un contenedor.
 
 ## Eventos del plugin
 

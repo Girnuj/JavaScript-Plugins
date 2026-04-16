@@ -2,6 +2,17 @@
 
 Native JavaScript plugin to replace an element with remote HTML on click.
 
+## Problem it solves
+
+Solves partial remote HTML updates for specific UI areas without requiring a full client-side rendering framework.
+
+## Benefits
+
+- Enables lightweight partial UI updates.
+- Avoids full reloads for localized changes.
+- Simplifies integration with HTML-returning endpoints.
+- Reduces boilerplate for dynamic placeholders.
+
 ## Requirements
 
 - A modern browser with support for `fetch`, `MutationObserver`, `WeakMap`, and `queueMicrotask`

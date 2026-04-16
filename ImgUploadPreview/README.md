@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para previsualizar imagenes en un `<img>` a partir de un `<input type="file">`.
 
+## Que viene a solucionar
+
+Evita el ciclo de prueba y error al subir imagenes, permitiendo validar visualmente el archivo antes de enviar el formulario.
+
+## Beneficios
+
+- Mejora UX con feedback inmediato de la imagen seleccionada.
+- Disminuye errores de carga de archivos incorrectos.
+- Elimina codigo repetitivo de `FileReader` por vista.
+- Se integra rapido con atributos `data-*`.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `FileReader`, `MutationObserver` y `WeakMap`

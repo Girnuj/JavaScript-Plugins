@@ -2,11 +2,13 @@
 
 Native JavaScript plugin to submit forms with `fetch` using `data-*` attributes, with HTML or JSON response handling.
 
-## Important note
+## Problem it solves
 
 With plain HTML, a form with `method` and `action` can already submit data without this plugin.
 
-This plugin adds an extra layer for modern scenarios:
+This plugin adds an extra layer for modern scenarios.
+
+## Benefits
 
 - Avoid full page reload with async `fetch` submission.
 - Render HTML responses into a target without repetitive custom code.
@@ -115,6 +117,14 @@ For production, use `formRequest.min.js`. If you need debugging, you can use `fo
   window.FormRequest.destroyAll(document);
 </script>
 ```
+
+Main methods:
+
+- window.FormRequest.init(element, options): creates or reuses a form instance.
+- window.FormRequest.getInstance(element): returns current instance or null.
+- window.FormRequest.destroy(element): destroys a specific instance.
+- window.FormRequest.initAll(root): initializes all compatible forms inside a container.
+- window.FormRequest.destroyAll(root): destroys all instances inside a container.
 
 ## Plugin Events
 

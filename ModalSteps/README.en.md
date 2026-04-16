@@ -2,6 +2,17 @@
 
 Native JavaScript plugin to handle step-based modals with remote HTML loading and progressive submit using `fetch`.
 
+## Problem it solves
+
+Solves modal wizard flows (multiple steps, validation, and navigation) without rebuilding request/state orchestration in every project.
+
+## Benefits
+
+- Standardizes step-based modal flows in one implementation.
+- Supports mixed GET/POST flows consistently.
+- Improves maintainability for complex forms.
+- Makes flow evolution easier without rewriting core behavior.
+
 ## Requirements
 
 - A modern browser with support for `fetch`, `MutationObserver`, `WeakMap`, `FormData`, and `CustomEvent`.
@@ -83,6 +94,16 @@ The plugin auto-initializes on modals matching:
   window.ModalSteps.destroyAll(document);
 </script>
 ```
+
+Main methods:
+
+- window.ModalSteps.init(element, options): creates or reuses an instance.
+- instance.bind(getFirstStepRequest): binds listeners and optional first-step callback.
+- instance.load(html, submitDataGetter): manually loads content into the main steps container.
+- window.ModalSteps.getInstance(element): returns current instance or null.
+- window.ModalSteps.destroy(element): destroys a specific instance.
+- window.ModalSteps.initAll(root): initializes all matches inside a container.
+- window.ModalSteps.destroyAll(root): destroys all matches inside a container.
 
 ## Plugin Events
 

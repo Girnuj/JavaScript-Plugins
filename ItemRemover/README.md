@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para remover elementos HTML de una lista o coleccion.
 
+## Que viene a solucionar
+
+Resuelve eliminaciones de items en interfaces dinamicas sin repetir codigo de busqueda de contenedor y limpieza de nodos.
+
+## Beneficios
+
+- Acelera acciones de borrado en UI.
+- Evita codigo duplicado de handlers de eliminacion.
+- Permite configuracion flexible por atributos u opciones.
+- Mejora mantenibilidad en componentes repetitivos.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `MutationObserver`, `WeakMap` y `queueMicrotask`

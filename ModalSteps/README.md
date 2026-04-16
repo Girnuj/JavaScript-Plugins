@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para manejar modales por pasos con carga remota de HTML y submit progresivo usando `fetch`.
 
+## Que viene a solucionar
+
+Resuelve flujos tipo wizard en modal (varios pasos, validacion y navegacion) sin reconstruir toda la logica de estado y solicitudes en cada proyecto.
+
+## Beneficios
+
+- Estandariza wizards de pasos en una sola implementacion.
+- Soporta flujos mixtos GET/POST de forma uniforme.
+- Mejora mantenibilidad de formularios complejos.
+- Facilita evolucion del flujo sin rehacer la base.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `fetch`, `MutationObserver`, `WeakMap`, `FormData` y `CustomEvent`.
@@ -83,6 +94,16 @@ El plugin se auto-inicializa sobre modales que cumplan:
   window.ModalSteps.destroyAll(document);
 </script>
 ```
+
+Metodos principales:
+
+- window.ModalSteps.init(element, options): crea o reutiliza una instancia.
+- instance.bind(getFirstStepRequest): enlaza listeners y callback opcional para primer step.
+- instance.load(html, submitDataGetter): carga contenido manual en el contenedor principal.
+- window.ModalSteps.getInstance(element): devuelve la instancia actual o null.
+- window.ModalSteps.destroy(element): destruye una instancia concreta.
+- window.ModalSteps.initAll(root): inicializa todas las coincidencias dentro de un contenedor.
+- window.ModalSteps.destroyAll(root): destruye todas las coincidencias dentro de un contenedor.
 
 ## Eventos del plugin
 

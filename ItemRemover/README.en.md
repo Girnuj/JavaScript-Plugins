@@ -2,6 +2,17 @@
 
 Native JavaScript plugin to remove HTML elements from a list or collection.
 
+## Problem it solves
+
+Solves repeated remove-item behavior in dynamic UIs without duplicating container lookup and node cleanup code.
+
+## Benefits
+
+- Speeds up remove actions in interfaces.
+- Avoids duplicated removal handlers.
+- Supports flexible targeting via attributes or options.
+- Improves maintainability in repetitive components.
+
 ## Requirements
 
 - A modern browser with support for `MutationObserver`, `WeakMap`, and `queueMicrotask`

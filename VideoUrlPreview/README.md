@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para previsualizar videos de YouTube en un `<iframe>` a partir de una URL ingresada en un `<input>`.
 
+## Que viene a solucionar
+
+Resuelve la validacion y previsualizacion inmediata de URLs de YouTube, evitando implementaciones repetidas de parseo y embebido.
+
+## Beneficios
+
+- Feedback instantaneo al pegar una URL.
+- Menos errores al guardar enlaces invalidos.
+- Integracion rapida en formularios de contenido.
+- Reutilizable en paneles CMS, blogs y admin.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `MutationObserver`, `WeakMap` y `queueMicrotask`

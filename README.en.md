@@ -74,6 +74,8 @@ Inside each plugin folder:
 1. Main plugin file (`.js`).
 2. `README.md` explaining:
    - What the plugin does.
+   - Problem it solves.
+   - Benefits.
    - Requirements.
    - How to include it in HTML.
    - Minimal usage example.

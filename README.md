@@ -74,6 +74,8 @@ En cada carpeta de plugin:
 1. Archivo principal del plugin (`.js`).
 2. `README.md` explicando:
    - Que hace el plugin.
+   - Que viene a solucionar.
+   - Beneficios.
    - Requisitos.
    - Como incluirlo en HTML.
    - Ejemplo minimo de uso.

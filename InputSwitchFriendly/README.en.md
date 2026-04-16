@@ -2,6 +2,17 @@
 
 Native JavaScript plugin to display a friendly text based on a switch/checkbox input state.
 
+## Problem it solves
+
+Solves the lack of context in boolean controls by translating switch/checkbox states into clear user or business-friendly labels.
+
+## Benefits
+
+- Improves readability of current state (`active/inactive`, `accepted/pending`, etc.).
+- Centralizes dynamic label logic.
+- Avoids repetitive listeners in each form.
+- Supports consistent wording across the UI.
+
 ## Requirements
 
 - A modern browser with support for `MutationObserver`, `WeakMap`, and `queueMicrotask`

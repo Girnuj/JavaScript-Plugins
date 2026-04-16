@@ -2,6 +2,17 @@
 
 Native JavaScript plugin to render HTML templates by replacing `{{property}}` placeholders.
 
+## Problem it solves
+
+Solves dynamic HTML rendering needs from data without introducing heavier template engines.
+
+## Benefits
+
+- Lightweight declarative rendering in native JavaScript.
+- Supports simple placeholders and nested paths.
+- Useful for prototypes, dashboards, and dynamic views.
+- Reduces dependency on additional tooling.
+
 ## Requirements
 
 - A modern browser with support for `class`, `matchAll`, `Set`, and `querySelector`

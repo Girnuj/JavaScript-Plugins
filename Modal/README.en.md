@@ -2,6 +2,17 @@
 
 Native plugin to open, close, and toggle modals without external dependencies.
 
+## Problem it solves
+
+Solves consistent modal handling without depending on third-party libraries or rebuilding modal behavior from scratch in each project.
+
+## Benefits
+
+- Clear API and attributes for open/close/toggle flows.
+- Less coupling to frameworks or external UI libraries.
+- Consistent behavior across modal implementations.
+- Easy integration with declarative HTML and optional JS hooks.
+
 ## Requirements
 
 - JavaScript with ECMAScript 2020 syntax.
@@ -90,6 +101,17 @@ window.Modal.destroy(modalElement);
 window.Modal.initAll();
 window.Modal.destroyAll();
 ```
+
+Main methods:
+
+- window.Modal.init(element, options): creates or reuses a modal instance.
+- instance.show(): opens the modal.
+- instance.hide(): closes the modal.
+- instance.toggle(): toggles open/closed state.
+- window.Modal.getInstance(element): returns current instance or null.
+- window.Modal.destroy(element): destroys a specific instance.
+- window.Modal.initAll(root): initializes all matching modals.
+- window.Modal.destroyAll(root): destroys all matching instances.
 
 ## Custom Events
 

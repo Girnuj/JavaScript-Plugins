@@ -114,6 +114,16 @@ En el trigger:
 </script>
 ```
 
+Metodos principales:
+
+- window.UIState.init(element, options): crea o reutiliza una instancia del host.
+- instance.setState(state, payload): aplica un estado visual y payload opcional.
+- instance.restore(): restaura contenido y estado base.
+- window.UIState.getInstance(element): devuelve la instancia actual o null.
+- window.UIState.destroy(element): destruye una instancia concreta.
+- window.UIState.initAll(root): inicializa todos los hosts compatibles en un contenedor.
+- window.UIState.destroyAll(root): destruye todas las instancias en un contenedor.
+
 ### Multiples clases por estado
 
 Puedes definir multiples clases separadas por espacios directamente en atributos del host:

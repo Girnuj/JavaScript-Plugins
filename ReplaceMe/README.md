@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para reemplazar un elemento por HTML remoto al hacer clic.
 
+## Que viene a solucionar
+
+Resuelve la carga parcial de HTML remoto sobre zonas concretas de la vista sin tener que montar un framework completo de rendering.
+
+## Beneficios
+
+- Permite updates parciales de UI con bajo costo.
+- Evita recargas completas para cambios puntuales.
+- Simplifica integracion con endpoints que devuelven HTML.
+- Reduce boilerplate para placeholders dinamicos.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `fetch`, `MutationObserver`, `WeakMap` y `queueMicrotask`

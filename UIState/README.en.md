@@ -114,6 +114,16 @@ On trigger:
 </script>
 ```
 
+Main methods:
+
+- window.UIState.init(element, options): creates or reuses a host instance.
+- instance.setState(state, payload): applies a visual state with optional payload.
+- instance.restore(): restores original content and base state.
+- window.UIState.getInstance(element): returns current instance or null.
+- window.UIState.destroy(element): destroys a specific instance.
+- window.UIState.initAll(root): initializes all compatible hosts in a container.
+- window.UIState.destroyAll(root): destroys all instances in a container.
+
 ### Multiple classes per state
 
 You can define multiple classes separated by spaces directly on host data attributes:

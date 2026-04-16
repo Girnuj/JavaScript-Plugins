@@ -2,6 +2,17 @@
 
 Plugin nativo para abrir, cerrar y alternar modales sin dependencias externas.
 
+## Que viene a solucionar
+
+Resuelve la necesidad de manejar modales de forma consistente sin depender de librerias externas ni implementar cada comportamiento desde cero.
+
+## Beneficios
+
+- API y atributos claros para abrir/cerrar/toggle.
+- Menos acoplamiento a frameworks o plugins de terceros.
+- Mejor consistencia de comportamiento entre modales.
+- Facil integracion con HTML declarativo y JS opcional.
+
 ## Requisitos
 
 - JavaScript con sintaxis ECMAScript 2020.
@@ -90,6 +101,17 @@ window.Modal.destroy(modalElement);
 window.Modal.initAll();
 window.Modal.destroyAll();
 ```
+
+Metodos principales:
+
+- window.Modal.init(element, options): crea o reutiliza una instancia del modal.
+- instance.show(): abre el modal.
+- instance.hide(): cierra el modal.
+- instance.toggle(): alterna entre abierto/cerrado.
+- window.Modal.getInstance(element): devuelve la instancia actual o null.
+- window.Modal.destroy(element): destruye una instancia concreta.
+- window.Modal.initAll(root): inicializa todos los modales encontrados.
+- window.Modal.destroyAll(root): destruye todas las instancias encontradas.
 
 ## Eventos custom
 

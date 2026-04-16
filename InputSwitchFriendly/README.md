@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para mostrar un texto amigable segun el estado de un input tipo switch/checkbox.
 
+## Que viene a solucionar
+
+Resuelve la falta de contexto en switches/checkboxes al traducir estados booleanos a mensajes claros para usuario o negocio.
+
+## Beneficios
+
+- Mejora legibilidad del estado actual (`activo/inactivo`, `aceptado/pendiente`, etc.).
+- Centraliza la logica de texto dinamico.
+- Evita listeners repetidos en cada formulario.
+- Facilita consistencia de lenguaje en toda la UI.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `MutationObserver`, `WeakMap` y `queueMicrotask`

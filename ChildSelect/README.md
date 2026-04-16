@@ -2,6 +2,17 @@
 
 Plugin JavaScript nativo para selects dependientes (parent-child) con carga dinamica de opciones via `fetch`.
 
+## Que viene a solucionar
+
+Resuelve el problema de sincronizar selects dependientes (por ejemplo, categoria -> subcategoria) sin escribir logica repetitiva de peticiones y repintado en cada formulario.
+
+## Beneficios
+
+- Reduce codigo manual para cargar opciones hijas.
+- Mantiene una experiencia mas clara para el usuario final.
+- Estandariza flujos parent-child con atributos `data-*`.
+- Facilita mantenimiento y reutilizacion entre vistas.
+
 ## Requisitos
 
 - Un navegador moderno con soporte para `fetch`, `MutationObserver`, `WeakMap` y `URL`

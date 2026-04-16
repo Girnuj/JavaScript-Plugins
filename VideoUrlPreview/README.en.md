@@ -2,6 +2,17 @@
 
 Native JavaScript plugin to preview YouTube videos inside an `<iframe>` from a URL entered in an `<input>`.
 
+## Problem it solves
+
+Solves immediate validation and preview of YouTube URLs, avoiding repeated parsing and embed logic implementations.
+
+## Benefits
+
+- Instant feedback when a URL is pasted.
+- Fewer mistakes from invalid links.
+- Fast integration in content forms.
+- Reusable in CMS panels, blogs, and admin tools.
+
 ## Requirements
 
 - A modern browser with support for `MutationObserver`, `WeakMap`, and `queueMicrotask`
