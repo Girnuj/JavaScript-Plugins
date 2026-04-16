@@ -131,3 +131,13 @@ Puedes abrir el archivo de prueba incluido en este proyecto:
 
 - `test-img-upload-preview.html`
 
+## Vista previa del ejemplo
+
+Estado inicial del HTML (sin archivo seleccionado):
+
+![ImgUploadPreview ejemplo inicial](./img/image.png)
+
+Estado con una imagen seleccionada en el input (se muestra la vista previa):
+
+![ImgUploadPreview con imagen seleccionada](./img/image2.png)
+

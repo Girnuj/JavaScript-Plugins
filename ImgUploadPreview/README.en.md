@@ -131,3 +131,13 @@ You can open the test file included in this project:
 
 - `test-img-upload-preview.html`
 
+## Example Preview
+
+Initial HTML state (no file selected):
+
+![ImgUploadPreview initial example](./img/image.png)
+
+State after selecting an image in the input (preview is shown):
+
+![ImgUploadPreview with selected image](./img/image2.png)
+
