@@ -92,3 +92,13 @@ You can open the test file included in this project:
 
 - `test-template-renderizer.html`
 
+## Example Preview
+
+Initial HTML state:
+
+![TemplateRenderizer initial example](./img/image.png)
+
+State after changing input values and clicking Render:
+
+![TemplateRenderizer with rendered values](./img/image2.png)
+

@@ -92,3 +92,13 @@ Puedes abrir el archivo de prueba incluido en este proyecto:
 
 - `test-template-renderizer.html`
 
+## Vista previa del ejemplo
+
+Estado inicial del HTML:
+
+![TemplateRenderizer ejemplo inicial](./img/image.png)
+
+Estado despues de cambiar los valores de los inputs y hacer click en Renderizar:
+
+![TemplateRenderizer con valores renderizados](./img/image2.png)
+
