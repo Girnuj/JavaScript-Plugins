@@ -1,0 +1,671 @@
+﻿/**
+ * @fileoverview Plugin nativo para transformar un modal en un formulario por pasos.
+ * @version 3.0
+ * @since 2026
+ * @author Samuel Montenegro
+ * @module ModalSteps
+ */
+(function () {
+    'use strict';
+
+    const CLASS_NAME_LOADING = 'm-loading'
+        , ATTR_DIALOG_SRC = 'data-dialog-src'
+        , SELECTOR_SUBJECT = '[role="dialog"][data-dialog="steps"],dialog[data-dialog="steps"]'
+        , SELECTOR_DIALOG_STEP_TARGET = '[data-dialog="main"]'
+        , EVENT_HIDDEN_NATIVE = 'hidden.plugin.modalStep'
+        , EVENT_SHOWN_NATIVE = 'shown.plugin.modalStep'
+        , INSTANCES = new WeakMap()
+        , PENDING_REMOVALS = new Set();
+
+    const STEPS_DIALOG_DEFAULTS = Object.freeze({
+        reloadOnNoContent: true,
+        strictSameOrigin: true,
+        allowedSubmitMethods: ['GET', 'POST'],
+        jsonResponseHandler: function () { },
+        after201: function () { },
+        after204: function () { },
+    });
+
+    const parseBoolean = (value) => {
+        if (value === undefined) return undefined;
+        if (typeof value === 'boolean') return value;
+        const normalized = String(value).trim().toLowerCase();
+        if (['', 'true', '1', 'yes', 'on'].includes(normalized)) return true;
+        if (['false', '0', 'no', 'off'].includes(normalized)) return false;
+        return undefined;
+    };
+
+    const toElements = (html) => {
+        if (!html) return [];
+        if (typeof html === 'string') {
+            const template = document.createElement('template');
+            template.innerHTML = html;
+            return Array.from(template.content.childNodes);
+        }
+        if (html instanceof Node) return [html];
+        if (html instanceof NodeList || Array.isArray(html)) return Array.from(html);
+        return [];
+    };
+
+    const parseResponseBody = async (response) => {
+        const contentType = response.headers.get('Content-Type') || ''
+            , isJson = contentType.toLowerCase().includes('json');
+
+        if (isJson) {
+            const data = await response.json().catch(() => null);
+            return { isJson, data, text: '' };
+        }
+
+        const text = await response.text().catch(() => '');
+        return { isJson, data: null, text };
+    };
+
+    const normalizeMethod = (value, fallback = 'POST') => {
+        const method = String(value || fallback).trim().toUpperCase();
+        return method || fallback;
+    };
+
+    const getAllowedMethods = (options) => {
+        if (!options || !Array.isArray(options.allowedSubmitMethods)) return ['GET', 'POST'];
+        const normalized = options.allowedSubmitMethods
+            .map((method) => normalizeMethod(method, ''))
+            .filter(Boolean);
+        return normalized.length > 0 ? normalized : ['GET', 'POST'];
+    };
+
+    const toSafeUrl = (rawUrl, strictSameOrigin) => {
+        const url = new URL(rawUrl, window.location.href)
+            , protocol = url.protocol.toLowerCase();
+
+        if (!['http:', 'https:'].includes(protocol)) {
+            throw new Error('Error: protocolo de URL no soportado para ModalSteps.');
+        }
+
+        if (strictSameOrigin && url.origin !== window.location.origin) {
+            throw new Error('Error: URL de otro origen bloqueada por strictSameOrigin.');
+        }
+
+        return url;
+    };
+
+    const toFormData = (value, form) => {
+        if (value instanceof FormData) return value;
+        if (value && typeof value === 'object') {
+            const plainObject = Object.getPrototypeOf(value) === Object.prototype;
+            if (plainObject) {
+                const data = new FormData();
+                Object.keys(value).forEach((key) => {
+                    const raw = value[key];
+                    if (Array.isArray(raw)) {
+                        raw.forEach((item) => data.append(key, item == null ? '' : String(item)));
+                        return;
+                    }
+                    data.append(key, raw == null ? '' : String(raw));
+                });
+                return data;
+            }
+        }
+        return new FormData(form);
+    };
+
+    const buildRequestFromForm = (form, submitDataGetter, options) => {
+        const action = form.getAttribute('action') || window.location.href
+            , method = normalizeMethod(form.getAttribute('method') || 'POST')
+            , rawData = typeof submitDataGetter === 'function'
+                ? submitDataGetter(form)
+                : new FormData(form)
+            , formData = toFormData(rawData, form)
+            , allowedMethods = getAllowedMethods(options)
+            , safeMethod = allowedMethods.includes(method) ? method : 'POST'
+            , safeActionUrl = toSafeUrl(action, options && options.strictSameOrigin !== false)
+            , isGetMethod = safeMethod === 'GET';
+
+        if (!isGetMethod) {
+            return {
+                action: safeActionUrl.toString(),
+                requestInit: {
+                    method: safeMethod,
+                    body: formData,
+                    credentials: 'same-origin',
+                },
+            };
+        }
+
+        const targetUrl = new URL(safeActionUrl.toString())
+            , params = new URLSearchParams(targetUrl.search);
+
+        for (const [key, value] of formData.entries()) {
+            params.append(key, typeof value === 'string' ? value : value.name || '');
+        }
+
+        targetUrl.search = params.toString();
+
+        return {
+            action: targetUrl.toString(),
+            requestInit: {
+                method: 'GET',
+                credentials: 'same-origin',
+            },
+        };
+    };
+
+    const parseStepRequestFromEvent = (evt) => {
+        const detail = evt && evt.detail ? evt.detail : null;
+        if (!detail) return null;
+
+        if (typeof detail.stepUrl === 'string' && detail.stepUrl.trim()) {
+            return {
+                url: detail.stepUrl,
+                requestInit: { method: 'GET', credentials: 'same-origin' },
+            };
+        }
+
+        if (detail.stepRequest && typeof detail.stepRequest === 'object') {
+            if (typeof detail.stepRequest.url !== 'string' || !detail.stepRequest.url.trim()) {
+                return null;
+            }
+            const init = detail.stepRequest.requestInit && typeof detail.stepRequest.requestInit === 'object'
+                ? { ...detail.stepRequest.requestInit }
+                : {};
+            return {
+                url: detail.stepRequest.url,
+                requestInit: {
+                    credentials: 'same-origin',
+                    ...init,
+                },
+            };
+        }
+
+        return null;
+    };
+
+    const getSubjects = (root = document) => {
+        const subjects = [];
+
+        if (root.nodeType === 1 && root.matches(SELECTOR_SUBJECT)) {
+            subjects.push(root);
+        }
+
+        if (typeof root.querySelectorAll === 'function') {
+            subjects.push(...root.querySelectorAll(SELECTOR_SUBJECT));
+        }
+
+        return subjects;
+    };
+
+    const flushPendingRemovals = () => {
+        PENDING_REMOVALS.forEach((node) => {
+            if (!node.isConnected) {
+                ModalSteps.destroyAll(node);
+            }
+            PENDING_REMOVALS.delete(node);
+        });
+    };
+
+    const scheduleRemovalCheck = (node) => {
+        PENDING_REMOVALS.add(node);
+        queueMicrotask(flushPendingRemovals);
+    };
+
+    const getOptionsFromData = (element) => {
+        const reloadOnNoContent = parseBoolean(element.dataset.dialogReloadOnNoContent)
+            , options = {};
+
+        if (reloadOnNoContent !== undefined) {
+            options.reloadOnNoContent = reloadOnNoContent;
+        }
+
+        return options;
+    };
+
+    /**
+     * Gestiona un modal de pasos con carga remota de HTML y submit via fetch.
+     * @class ModalSteps
+     */
+    class ModalSteps {
+        /**
+         * Crea una instancia del plugin sobre un modal.
+         * @param {HTMLElement} element Elemento modal sujeto.
+         * @param {Object} options Opciones de configuracion.
+         */
+        constructor(element, options) {
+            this.subject = element;
+            this.stepsTarget = element.querySelector(SELECTOR_DIALOG_STEP_TARGET);
+            this.options = { ...STEPS_DIALOG_DEFAULTS, ...options };
+            this.submitDataGetter = null;
+            this.getFirstStepRequest = null;
+            this.isBound = false;
+            this.handleSubmit = this.handleSubmit.bind(this);
+            this.handleHidden = this.handleHidden.bind(this);
+            this.handleShown = this.handleShown.bind(this);
+        }
+
+        /**
+         * Reemplaza el contenido del contenedor principal de pasos.
+         * @param {string|Node|NodeList|Array<Node>} html HTML o nodos a inyectar.
+         * @returns {void}
+         */
+        replaceContent(html) {
+            if (!this.stepsTarget) return;
+            const nodes = toElements(html);
+            this.stepsTarget.replaceChildren(...nodes);
+        }
+
+        /**
+         * Delega el manejo de respuestas JSON al callback configurado.
+         * @param {*} data Datos JSON recibidos.
+         * @param {number} status Codigo HTTP asociado.
+         * @returns {void}
+         */
+        handleJson(data, status) {
+            this.options.jsonResponseHandler && this.options.jsonResponseHandler(data, status, this.subject);
+        }
+
+        /**
+         * Procesa y renderiza una respuesta HTML en el modal.
+         * @param {string|Node|NodeList|Array<Node>} html HTML o nodos a procesar.
+         * @returns {void}
+         */
+        handleHtml(html) {
+            if (!html) return;
+            this.replaceContent(html);
+            this.focusFirstField();
+        }
+
+        /**
+         * Enfoca el primer control interactivo del paso actual.
+         * @returns {void}
+         */
+        focusFirstField() {
+            if (!this.stepsTarget) return;
+            const firstField = this.stepsTarget.querySelector('input:not([type="hidden"]), select, textarea, button');
+            if (firstField instanceof HTMLElement) {
+                firstField.focus();
+            }
+        }
+
+        /**
+         * Activa o desactiva estado de carga visual y bloqueo de botones.
+         * @param {HTMLElement[]} buttons Botones a actualizar.
+         * @param {boolean} isLoading Estado de carga.
+         * @returns {void}
+         */
+        setLoadingState(buttons, isLoading) {
+            buttons.forEach((btn) => {
+                btn.disabled = isLoading;
+                btn.classList.toggle(CLASS_NAME_LOADING, isLoading);
+            });
+            if (this.stepsTarget) {
+                this.stepsTarget.classList.toggle(CLASS_NAME_LOADING, isLoading);
+            }
+        }
+
+        /**
+         * Solicita el HTML de un step remoto y lo renderiza en el modal.
+         * @param {string} url URL del step a cargar.
+         * @returns {Promise<void>}
+         */
+        async requestAndRenderHtml(url, requestInit = {}) {
+            const safeUrl = toSafeUrl(url, this.options.strictSameOrigin !== false)
+                , method = normalizeMethod(requestInit.method || 'GET', 'GET')
+                , fetchInit = {
+                    credentials: 'same-origin',
+                    ...requestInit,
+                    method,
+                };
+
+            if (method === 'GET' || method === 'HEAD') {
+                delete fetchInit.body;
+            }
+
+            const response = await fetch(safeUrl.toString(), fetchInit);
+
+            const body = await parseResponseBody(response);
+            if (response.ok) {
+                this.handleHtml(body.text);
+                return;
+            }
+
+            if (response.status === 400 && !body.isJson) {
+                this.handleHtml(body.text);
+                return;
+            }
+
+            if (response.status === 418) {
+                const nextLocation = response.headers.get('Location');
+                if (nextLocation) {
+                    window.location.href = nextLocation;
+                }
+                return;
+            }
+
+            this.hideModal();
+        }
+
+        /**
+         * Cierra el modal usando API de Modal si existe, o fallback nativo/manual.
+         * @returns {void}
+         */
+        hideModal() {
+            const modalApi = window.Modal && typeof window.Modal.getInstance === 'function'
+                ? window.Modal.getInstance(this.subject)
+                : null;
+
+            if (modalApi && typeof modalApi.hide === 'function') {
+                modalApi.hide();
+                return;
+            }
+
+            if (this.subject.tagName === 'DIALOG' && typeof this.subject.close === 'function') {
+                this.subject.close();
+                return;
+            }
+
+            this.subject.classList.remove('modal-opened');
+            this.subject.removeAttribute('aria-modal');
+            this.subject.setAttribute('aria-hidden', 'true');
+        }
+
+        /**
+         * Maneja el submit del formulario de steps usando fetch.
+         * @param {SubmitEvent} evt Evento submit capturado.
+         * @returns {Promise<void>}
+         */
+        async handleSubmit(evt) {
+            const form = evt.target;
+            if (!(form instanceof HTMLFormElement)) return;
+            if (!this.subject.contains(form)) return;
+
+            if (typeof form.reportValidity === 'function' && !form.reportValidity()) {
+                return;
+            }
+
+            evt.preventDefault();
+
+            const submitButtons = Array.from(this.subject.querySelectorAll('[type="submit"]'));
+            this.setLoadingState(submitButtons, true);
+
+            const request = buildRequestFromForm(form, this.submitDataGetter, this.options);
+
+            try {
+                const response = await fetch(request.action, request.requestInit);
+                const body = await parseResponseBody(response);
+
+                this.setLoadingState(submitButtons, false);
+
+                if (response.status === 200) {
+                    body.isJson ? this.handleJson(body.data, 200) : this.handleHtml(body.text);
+                    return;
+                }
+
+                if (response.status === 201) {
+                    if (!body.isJson && body.text.length === 0 && this.options.reloadOnNoContent) {
+                        window.location.reload();
+                    } else if (body.isJson) {
+                        this.handleJson(body.data, 201);
+                    }
+                    this.options.after201 && this.options.after201(body.isJson ? body.data : body.text, response, this.subject);
+                    return;
+                }
+
+                if (response.status === 204) {
+                    if (this.options.reloadOnNoContent) {
+                        window.location.reload();
+                    }
+                    this.options.after204 && this.options.after204(response, this.subject);
+                    return;
+                }
+
+                if (response.status === 400) {
+                    submitButtons.forEach((btn) => { btn.disabled = false; });
+                    body.isJson ? this.handleJson(body.data, 400) : this.handleHtml(body.text);
+                    return;
+                }
+
+                if (response.status === 418) {
+                    const nextLocation = response.headers.get('Location');
+                    if (nextLocation) {
+                        window.location.href = nextLocation;
+                    }
+                    return;
+                }
+
+                submitButtons.forEach((btn) => { btn.disabled = false; });
+                this.hideModal();
+            } catch (_error) {
+                this.setLoadingState(submitButtons, false);
+                submitButtons.forEach((btn) => { btn.disabled = false; });
+                this.hideModal();
+            }
+        }
+
+        /**
+         * Maneja el evento de apertura del modal y resuelve carga del primer step.
+         * @param {Event|CustomEvent} evt Evento de apertura del modal.
+         * @returns {Promise<void>}
+         */
+        async handleShown(evt) {
+            const relatedTarget = evt && evt.detail && evt.detail.relatedTarget
+                ? evt.detail.relatedTarget
+                : evt.relatedTarget || null;
+            const opener = relatedTarget instanceof HTMLElement ? relatedTarget : null;
+            const src = opener ? opener.getAttribute(ATTR_DIALOG_SRC) : null;
+            const requestFromEvent = parseStepRequestFromEvent(evt);
+
+            if (!src && !requestFromEvent && typeof this.getFirstStepRequest !== 'function') {
+                return;
+            }
+
+            const openerButtons = opener ? [opener] : [];
+            this.setLoadingState(openerButtons, true);
+
+            if (this.subject.getAttribute('aria-hidden') !== 'false') {
+                this.subject.setAttribute('aria-hidden', 'false');
+            }
+
+            try {
+                if (typeof this.getFirstStepRequest === 'function') {
+                    const result = await this.getFirstStepRequest();
+                    this.setLoadingState(openerButtons, false);
+
+                    if (typeof result === 'string' || result instanceof Node || result instanceof NodeList || Array.isArray(result)) {
+                        this.handleHtml(result);
+                        return;
+                    }
+
+                    if (result instanceof Response) {
+                        const body = await parseResponseBody(result);
+                        if (result.ok && !body.isJson) {
+                            this.handleHtml(body.text);
+                            return;
+                        }
+                        if (result.status === 400 && !body.isJson) {
+                            this.handleHtml(body.text);
+                            return;
+                        }
+                        if (result.status === 418) {
+                            const nextLocation = result.headers.get('Location');
+                            if (nextLocation) {
+                                window.location.href = nextLocation;
+                            }
+                            return;
+                        }
+                        this.hideModal();
+                        return;
+                    }
+
+                    return;
+                }
+
+                if (requestFromEvent) {
+                    await this.requestAndRenderHtml(requestFromEvent.url, requestFromEvent.requestInit);
+                    this.setLoadingState(openerButtons, false);
+                    return;
+                }
+
+                await this.requestAndRenderHtml(src, {
+                    method: 'GET',
+                    credentials: 'same-origin',
+                });
+                this.setLoadingState(openerButtons, false);
+            } catch (_error) {
+                this.setLoadingState(openerButtons, false);
+                this.hideModal();
+            }
+        }
+
+        /**
+         * Limpia el contenido de steps cuando el modal se oculta.
+         * @returns {void}
+         */
+        handleHidden() {
+            if (this.stepsTarget) {
+                this.stepsTarget.replaceChildren();
+            }
+        }
+
+        /**
+         * Vincula listeners principales del plugin.
+         * @param {Function|null} [getFirstStepRequest=null] Callback opcional para cargar el primer step.
+         * @returns {void}
+         */
+        bind(getFirstStepRequest = null) {
+            if (typeof getFirstStepRequest === 'function') {
+                this.getFirstStepRequest = getFirstStepRequest;
+            }
+
+            if (this.isBound) return;
+
+            this.subject.addEventListener(EVENT_HIDDEN_NATIVE, this.handleHidden);
+            this.subject.addEventListener('close', this.handleHidden);
+            this.subject.addEventListener(EVENT_SHOWN_NATIVE, this.handleShown);
+            this.subject.addEventListener('submit', this.handleSubmit);
+            this.isBound = true;
+        }
+
+        /**
+         * Desvincula listeners principales del plugin.
+         * @returns {void}
+         */
+        unbind() {
+            if (!this.isBound) return;
+            this.subject.removeEventListener(EVENT_HIDDEN_NATIVE, this.handleHidden);
+            this.subject.removeEventListener('close', this.handleHidden);
+            this.subject.removeEventListener(EVENT_SHOWN_NATIVE, this.handleShown);
+            this.subject.removeEventListener('submit', this.handleSubmit);
+            this.isBound = false;
+        }
+
+        /**
+         * Carga contenido HTML manualmente en el step target.
+         * @param {string|Node|NodeList|Array<Node>} html HTML o nodos a inyectar.
+         * @param {Function} [submitDataGetter] Callback opcional para construir datos del submit.
+         * @returns {void}
+         */
+        load(html, submitDataGetter) {
+            this.submitDataGetter = typeof submitDataGetter === 'function' ? submitDataGetter : null;
+            this.handleHtml(html);
+        }
+
+        /**
+         * Destruye la instancia actual y libera recursos.
+         * @returns {void}
+         */
+        destroy() {
+            this.unbind();
+            INSTANCES.delete(this.subject);
+        }
+
+        /**
+         * Inicializa (o reutiliza) una instancia para un modal.
+         * @param {HTMLElement} element Elemento modal.
+         * @param {Object} [options={}] Opciones de inicializacion.
+         * @returns {ModalSteps}
+         */
+        static init(element, options = {}) {
+            if (!(element instanceof HTMLElement)) {
+                throw new Error('Error: ModalSteps.init requiere un HTMLElement.');
+            }
+
+            const currentInstance = INSTANCES.get(element);
+            if (currentInstance) return currentInstance;
+
+            const mergedOptions = { ...getOptionsFromData(element), ...options }
+                , instance = new ModalSteps(element, mergedOptions);
+
+            INSTANCES.set(element, instance);
+            instance.bind();
+            return instance;
+        }
+
+        /**
+         * Obtiene la instancia asociada a un modal.
+         * @param {HTMLElement} element Elemento modal.
+         * @returns {ModalSteps|null}
+         */
+        static getInstance(element) {
+            if (!(element instanceof HTMLElement)) return null;
+            return INSTANCES.get(element) || null;
+        }
+
+        /**
+         * Destruye la instancia asociada a un modal.
+         * @param {HTMLElement} element Elemento modal.
+         * @returns {boolean}
+         */
+        static destroy(element) {
+            const instance = ModalSteps.getInstance(element);
+            if (!instance) return false;
+            instance.destroy();
+            return true;
+        }
+
+        /**
+         * Inicializa todas las coincidencias dentro de un contenedor.
+         * @param {ParentNode|Element|Document} [root=document] Raiz de busqueda.
+         * @param {Object} [options={}] Opciones compartidas.
+         * @returns {ModalSteps[]}
+         */
+        static initAll(root = document, options = {}) {
+            return getSubjects(root).map((element) => ModalSteps.init(element, options));
+        }
+
+        /**
+         * Destruye todas las instancias encontradas dentro de un contenedor.
+         * @param {ParentNode|Element|Document} [root=document] Raiz de busqueda.
+         * @returns {number}
+         */
+        static destroyAll(root = document) {
+            return getSubjects(root).reduce((destroyedCount, element) => {
+                return ModalSteps.destroy(element) ? destroyedCount + 1 : destroyedCount;
+            }, 0);
+        }
+    }
+
+    const startAutoInit = () => {
+        ModalSteps.initAll(document);
+
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType !== 1) return;
+                    PENDING_REMOVALS.delete(node);
+                    ModalSteps.initAll(node);
+                });
+
+                mutation.removedNodes.forEach((node) => {
+                    if (node.nodeType !== 1) return;
+                    scheduleRemovalCheck(node);
+                });
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    };
+
+    document.readyState === 'loading'
+        ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
+        : startAutoInit();
+
+    window.ModalSteps = ModalSteps;
+})();
