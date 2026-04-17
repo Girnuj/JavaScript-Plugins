@@ -142,7 +142,7 @@
         }
     </style>
 </head>
-<body>
+<body data-pp-observe-root-form-validate>
     <main class="card">
         <h1>FormValidate + FormRequest</h1>
         <p>
@@ -266,6 +266,7 @@
                     <input id="simpleEmail"
                            name="simpleEmail"
                            type="text"
+                           required
                            data-fv-no-whitespace="true"
                            data-fv-invalid-class="u-invalid-red"
                            data-fv-valid-class="u-valid-green"

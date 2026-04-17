@@ -44,6 +44,73 @@ ECMAScript 2020 is supported by most modern browsers.
 Each plugin includes a minified build (`*.min.js`) inside its own folder.
 If you do not need to read or debug source code, use the minified file for a lighter production integration.
 
+## Recommended Observer Pattern
+
+To keep strong performance when multiple plugins coexist in the same view, the repository follows a shared observation pattern:
+
+- `data-pp-observe-global`: controls whether plugins register automatic `MutationObserver` listeners.
+  - Default behavior: enabled.
+  - If you set `data-pp-observe-global="false"` on `<html>`, global automatic observation is disabled.
+- `data-pp-observe-root`: scopes observer root to a specific CSS selector.
+  - Example: `data-pp-observe-root="#app"` on `<html>` to observe only the main container.
+  - If selector is invalid or not found, plugins fallback safely to `document.body`.
+
+- `data-pp-observe-root-{plugin}`: lets you mark the root element directly for a specific plugin (without a selector string on `<html>`).
+  - Example: `<main data-pp-observe-root-form-validate>` for `FormValidate`.
+  - It has priority over `data-pp-observe-root` when both are present.
+
+### Quick Usage (4 Cases)
+
+1. Default (no configuration)
+   - Add nothing.
+   - Result: fallback to `document.body`.
+
+2. Shared root by selector (SPA)
+
+```html
+<html data-pp-observe-root="#app"></html>
+```
+
+3. Direct root per plugin (recommended when combining plugins)
+
+```html
+<section data-pp-observe-root-form-request>...</section>
+<section data-pp-observe-root-request-state>...</section>
+<section data-pp-observe-root-notification-push>...</section>
+```
+
+4. No global observer (manual init)
+
+```html
+<html data-pp-observe-global="false"></html>
+<script>
+  window.FormValidate.initAll(document);
+  window.FormRequest.initAll(document);
+  window.Modal.initAll(document);
+</script>
+```
+
+Priority rule: direct plugin root > selector root on `<html>` > `document.body`.
+
+### Per-Plugin Attributes (Direct Root)
+
+- `Modal`: `data-pp-observe-root-modal`
+- `ModalSteps`: `data-pp-observe-root-modal-steps`
+- `FormRequest`: `data-pp-observe-root-form-request`
+- `FormValidate`: `data-pp-observe-root-form-validate`
+- `RequestState`: `data-pp-observe-root-request-state`
+- `NotificationPush`: `data-pp-observe-root-notification-push`
+- `UIState`: `data-pp-observe-root-ui-state`
+- `ChildSelect`: `data-pp-observe-root-child-select`
+- `ImgUploadPreview`: `data-pp-observe-root-img-upload-preview`
+- `VideoUrlPreview`: `data-pp-observe-root-video-url-preview`
+- `ItemMover`: `data-pp-observe-root-item-mover`
+- `ItemRemover`: `data-pp-observe-root-item-remover`
+- `ReplaceMe`: `data-pp-observe-root-replace-me`
+- `InputSwitchFriendly`: `data-pp-observe-root-input-switch-friendly`
+
+Architecture note: when combining network-related plugins (for example `FormRequest` with `RequestState`), keep a single real request owner to avoid double submissions and duplicated lifecycle events.
+
 
 ## Repository Structure
 

@@ -44,6 +44,73 @@ ECMAScript 2020 esta soportado por la mayoria de navegadores modernos.
 Cada plugin incluye su version minificada (`*.min.js`) dentro de su propia carpeta.
 Si no necesitas leer o depurar el codigo fuente, usa el archivo minificado para una integracion mas ligera en produccion.
 
+## Patron Recomendado De Observers
+
+Para mantener buen rendimiento cuando varios plugins conviven en una misma vista, el repositorio usa un patron comun de observacion:
+
+- `data-pp-observe-global`: controla si los plugins registran `MutationObserver` automatico.
+  - Valor por defecto: activo.
+  - Si defines `data-pp-observe-global="false"` en `<html>`, se desactiva la observacion automatica global.
+- `data-pp-observe-root`: limita el root observado a un selector CSS especifico.
+  - Ejemplo: `data-pp-observe-root="#app"` en `<html>` para observar solo el contenedor principal.
+  - Si el selector no existe o es invalido, el plugin usa `document.body` como fallback seguro.
+
+- `data-pp-observe-root-{plugin}`: permite marcar directamente el elemento root para un plugin especifico (sin selector string en `<html>`).
+  - Ejemplo: `<main data-pp-observe-root-form-validate>` para `FormValidate`.
+  - Tiene prioridad sobre `data-pp-observe-root` cuando ambos existen.
+
+### Uso Rapido (4 Casos)
+
+1. Default (sin configurar nada)
+   - No agregues atributos.
+   - Resultado: fallback a `document.body`.
+
+2. Root compartido por selector (SPA)
+
+```html
+<html data-pp-observe-root="#app"></html>
+```
+
+3. Root directo por plugin (recomendado cuando mezclas plugins)
+
+```html
+<section data-pp-observe-root-form-request>...</section>
+<section data-pp-observe-root-request-state>...</section>
+<section data-pp-observe-root-notification-push>...</section>
+```
+
+4. Sin observer global (init manual)
+
+```html
+<html data-pp-observe-global="false"></html>
+<script>
+  window.FormValidate.initAll(document);
+  window.FormRequest.initAll(document);
+  window.Modal.initAll(document);
+</script>
+```
+
+Regla de prioridad: root directo por plugin > root por selector en `<html>` > `document.body`.
+
+### Atributos Por Plugin (Root Directo)
+
+- `Modal`: `data-pp-observe-root-modal`
+- `ModalSteps`: `data-pp-observe-root-modal-steps`
+- `FormRequest`: `data-pp-observe-root-form-request`
+- `FormValidate`: `data-pp-observe-root-form-validate`
+- `RequestState`: `data-pp-observe-root-request-state`
+- `NotificationPush`: `data-pp-observe-root-notification-push`
+- `UIState`: `data-pp-observe-root-ui-state`
+- `ChildSelect`: `data-pp-observe-root-child-select`
+- `ImgUploadPreview`: `data-pp-observe-root-img-upload-preview`
+- `VideoUrlPreview`: `data-pp-observe-root-video-url-preview`
+- `ItemMover`: `data-pp-observe-root-item-mover`
+- `ItemRemover`: `data-pp-observe-root-item-remover`
+- `ReplaceMe`: `data-pp-observe-root-replace-me`
+- `InputSwitchFriendly`: `data-pp-observe-root-input-switch-friendly`
+
+Nota de arquitectura: cuando combines plugins de red (por ejemplo `FormRequest` con `RequestState`), define un solo "owner" del request real para evitar doble envio y eventos duplicados.
+
 
 ## Estructura del Repositorio
 
