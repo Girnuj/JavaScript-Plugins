@@ -68,6 +68,7 @@ Para produccion, usa `formRequest.min.js`. Si necesitas depurar, puedes usar `fo
 - `data-form-same-origin="true|false"`: restringe origen de URL. Estado: **opcional**.
 - `data-form-allowed-methods="GET,POST"`: lista de metodos permitidos. Estado: **opcional**.
 - `data-form-credentials="same-origin|include|omit"`: valor de credenciales para fetch. Estado: **opcional**.
+- `data-form-headers='{"X-Client":"panel-web","X-Tenant":"acme"}'`: headers personalizados en formato JSON. Estado: **opcional**.
 - `data-form-prevent-concurrent="true|false"`: cancela solicitud previa antes de enviar una nueva. Estado: **opcional**.
 - `data-form-timeout="15000"`: timeout en milisegundos por solicitud. Estado: **opcional**.
 - `data-form-retry-count="1"`: numero de reintentos ante fallo. Estado: **opcional**.
@@ -94,6 +95,7 @@ Para produccion, usa `formRequest.min.js`. Si necesitas depurar, puedes usar `fo
     retryDelayMs: 300,
     retryOnStatuses: [408, 429, 500, 502, 503, 504],
     debounceGetMs: 300,
+    headers: { 'X-Client': 'panel-web' },
     csrfMetaName: 'csrf-token',
     csrfHeaderName: 'X-CSRF-Token',
     csrfToken: '',

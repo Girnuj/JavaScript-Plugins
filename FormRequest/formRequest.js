@@ -28,6 +28,7 @@
         retryDelayMs: 300,
         debounceGetMs: 0,
         credentials: 'same-origin',
+        headers: null,
         csrfMetaName: 'csrf-token',
         csrfHeaderName: 'X-CSRF-Token',
         csrfToken: '',
@@ -72,6 +73,25 @@
             .map((item) => parseInt(item.trim(), 10))
             .filter((item) => Number.isInteger(item) && item >= 100 && item <= 599);
         return codes.length > 0 ? codes : null;
+    };
+
+    const parseHeadersFromJson = (value) => {
+        if (!value || typeof value !== 'string') return null;
+
+        try {
+            const parsed = JSON.parse(value)
+                , isObject = parsed && typeof parsed === 'object' && !Array.isArray(parsed);
+
+            if (!isObject) return null;
+
+            const entries = Object.entries(parsed)
+                .map(([key, headerValue]) => [String(key || '').trim(), String(headerValue ?? '').trim()])
+                .filter(([key]) => key.length > 0);
+
+            return entries.length > 0 ? Object.fromEntries(entries) : null;
+        } catch (_error) {
+            return null;
+        }
     };
 
     const wait = (ms) => {
@@ -168,6 +188,15 @@
             options.csrfToken = element.dataset.formCsrfToken.trim();
         }
 
+        if (typeof element.dataset.formHeaders === 'string' && element.dataset.formHeaders.trim()) {
+            const parsedHeaders = parseHeadersFromJson(element.dataset.formHeaders.trim());
+            if (parsedHeaders) {
+                options.headers = parsedHeaders;
+            } else {
+                console.warn('FormRequest: data-form-headers tiene un JSON invalido y sera ignorado.', element);
+            }
+        }
+
         if (resetOnSuccess !== undefined) {
             options.resetOnSuccess = resetOnSuccess;
         }
@@ -234,6 +263,7 @@
          * @param {number[]} [options.retryOnStatuses] Estados HTTP que habilitan reintento.
          * @param {number} [options.debounceGetMs=0] Debounce para envios GET en milisegundos.
          * @param {'same-origin'|'include'|'omit'} [options.credentials='same-origin'] Politica de credenciales para fetch.
+         * @param {Object<string,string>} [options.headers] Headers personalizados para la solicitud.
          * @param {string} [options.csrfMetaName='csrf-token'] Nombre del meta tag con token CSRF.
          * @param {string} [options.csrfHeaderName='X-CSRF-Token'] Header HTTP para enviar CSRF.
          * @param {string} [options.csrfToken=''] Token CSRF explicito (prioritario sobre meta).
@@ -401,6 +431,24 @@
             request.requestInit.headers = headers;
         }
 
+        applyCustomHeaders(request) {
+            const customHeaders = this.options && this.options.headers && typeof this.options.headers === 'object'
+                ? this.options.headers
+                : null;
+
+            if (!customHeaders) return;
+
+            const headers = new Headers(request.requestInit.headers || {});
+
+            Object.entries(customHeaders).forEach(([key, value]) => {
+                const headerName = String(key || '').trim();
+                if (!headerName) return;
+                headers.set(headerName, String(value ?? ''));
+            });
+
+            request.requestInit.headers = headers;
+        }
+
         async runRequest(request) {
             const retryCount = Math.max(0, Math.floor(parseNumber(this.options.retryCount, 0)))
                 , retryDelayMs = Math.max(0, parseNumber(this.options.retryDelayMs, 0))
@@ -496,6 +544,7 @@
             this.clearFieldErrors();
 
             const request = this.buildRequest(form);
+            this.applyCustomHeaders(request);
             this.applySecurityHeaders(request);
 
             const beforeEvent = new CustomEvent('before.plugin.formRequest', {

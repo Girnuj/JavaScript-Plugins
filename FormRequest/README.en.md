@@ -89,6 +89,7 @@ For production, use `formRequest.min.js`. If you need debugging, you can use `fo
 - `data-form-same-origin="true|false"`: URL origin restriction. Status: **optional**.
 - `data-form-allowed-methods="GET,POST"`: allowed HTTP methods list. Status: **optional**.
 - `data-form-credentials="same-origin|include|omit"`: fetch credentials mode. Status: **optional**.
+- `data-form-headers='{"X-Client":"dashboard-web","X-Tenant":"acme"}'`: custom headers in JSON format. Status: **optional**.
 - `data-form-prevent-concurrent="true|false"`: abort previous request before sending a new one. Status: **optional**.
 - `data-form-timeout="15000"`: request timeout in milliseconds. Status: **optional**.
 - `data-form-retry-count="1"`: retry attempts on failure. Status: **optional**.
@@ -115,6 +116,7 @@ For production, use `formRequest.min.js`. If you need debugging, you can use `fo
     retryDelayMs: 300,
     retryOnStatuses: [408, 429, 500, 502, 503, 504],
     debounceGetMs: 300,
+    headers: { 'X-Client': 'dashboard-web' },
     csrfMetaName: 'csrf-token',
     csrfHeaderName: 'X-CSRF-Token',
     csrfToken: '',
