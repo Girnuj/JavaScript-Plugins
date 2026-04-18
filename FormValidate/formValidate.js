@@ -354,9 +354,16 @@
          * @returns {HTMLElement|null}
          */
         get summaryElement() {
+
+
+            // 1. Prioridad: asp-validation-summary="ModelOnly" o "All" (Razor/.NET) solo dentro del formulario
+            let summary = this.subject.querySelector('[asp-validation-summary="ModelOnly"]')
+                || this.subject.querySelector('[asp-validation-summary="All"]');
+            if (summary) return summary;
+
+            // 2. Fallback: summarySelector del plugin
             const selector = this.options.summarySelector;
             if (!selector || typeof selector !== 'string') return null;
-
             try {
                 return this.subject.querySelector(selector) || document.querySelector(selector);
             } catch (_error) {
@@ -443,7 +450,15 @@
             }
 
             const key = this.getFieldKey(field);
-            return this.subject.querySelector('[data-fv-message-for="' + CSS.escape(key) + '"]');
+            // 1. data-fv-message-for (plugin nativo)
+            let target = this.subject.querySelector('[data-fv-message-for="' + CSS.escape(key) + '"]');
+            if (target) return target;
+
+            // 2. asp-validation-for (Razor/.NET)
+            target = this.subject.querySelector('[asp-validation-for="' + CSS.escape(key) + '"]');
+            if (target) return target;
+
+            return null;
         }
 
         /**

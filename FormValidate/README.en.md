@@ -1,3 +1,92 @@
+## Razor/.NET compatibility (asp-validation-for)
+
+FormValidate is compatible with Razor/.NET forms: if there is an element with the attribute `asp-validation-for="NAME"` (where NAME is the field's name or id), the plugin will automatically show the error message in that container, with no need for extra plugin attributes.
+
+Example:
+
+```html
+<input name="Email" ... />
+<span asp-validation-for="Email"></span>
+```
+
+This allows you to integrate extended plugin validations in .NET forms without changing Razor's validation message structure.
+
+You can still use `data-fv-message-for="nameOrId"` if you prefer.
+
+
+## Global summary
+
+FormValidate can show the error summary in a configurable container. By default it uses `[data-form-validate-summary]`, but if the form contains an element with `asp-validation-summary="ModelOnly"` or `asp-validation-summary="All"` (as in Razor/.NET), the plugin will automatically detect and use it for the error list.
+
+This allows the plugin's extended validation summary to integrate natively with Razor's validation structure, without duplicating containers.
+
+Razor example:
+
+```html
+<form data-form-validate>
+  ...
+  <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+  <!-- or -->
+  <div asp-validation-summary="All" class="text-danger"></div>
+  ...
+</form>
+```
+
+Classic example:
+
+```html
+<form data-form-validate>
+  ...
+  <div data-form-validate-summary hidden></div>
+  ...
+</form>
+```
+
+
+## Minimal example
+
+```html
+<form data-form-validate>
+  <input id="email" name="email" type="text" data-fv-no-whitespace="true" data-fv-message-no-whitespace="Email cannot contain spaces." />
+  <!-- The plugin error message will show here automatically for Razor/.NET compatibility -->
+  <span asp-validation-for="email"></span>
+
+  <input id="pass" type="password" />
+
+  <input
+    name="passConfirm"
+    type="password"
+    data-fv-equals="#pass"
+    data-fv-message-equals="Confirmation does not match."
+  />
+  <div data-fv-message-for="passConfirm"></div>
+
+  <button type="submit">Send</button>
+</form>
+```
+
+### Minimal example with Razor summary
+
+```html
+<form data-form-validate>
+  <div asp-validation-summary="All" class="text-danger"></div>
+
+  <input id="email" name="email" type="text" data-fv-no-whitespace="true" data-fv-message-no-whitespace="Email cannot contain spaces." />
+  <span asp-validation-for="email"></span>
+
+  <input id="pass" type="password" />
+
+  <input
+    name="passConfirm"
+    type="password"
+    data-fv-equals="#pass"
+    data-fv-message-equals="Confirmation does not match."
+  />
+  <span asp-validation-for="passConfirm"></span>
+
+  <button type="submit">Send</button>
+</form>
+```
 # FormValidate
 
 ## What it does

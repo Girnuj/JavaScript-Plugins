@@ -62,6 +62,7 @@ Estas reglas no duplican atributos nativos como `required`, `minlength` o `patte
 - `data-fv-file-types="image/jpeg,image/png,.pdf"`: tipos/extensiones permitidos.
 - `data-fv-custom="nombreReglaA,nombreReglaB"`: ejecuta reglas custom registradas por API.
 
+
 ## Mensajes
 
 - `data-fv-message="..."`: mensaje generico para el campo.
@@ -78,20 +79,61 @@ Estas reglas no duplican atributos nativos como `required`, `minlength` o `patte
 - `data-fv-message-custom-nombre-regla="..."`: mensaje especifico por regla custom.
 - `data-fv-message-target="#selector"`: renderiza mensaje en un elemento especifico.
 
-Tambien puedes usar un target por clave de campo con `data-fv-message-for="nameOId"`.
+### Compatibilidad con Razor/.NET (asp-validation-for)
+
+FormValidate es compatible con formularios Razor/.NET: si existe un elemento con el atributo `asp-validation-for="NOMBRE"` (donde NOMBRE es el name/id del campo), el mensaje de error del plugin se mostrará automáticamente en ese contenedor, sin necesidad de agregar atributos extra del plugin.
+
+Ejemplo:
+
+```html
+<input name="Email" ... />
+<span asp-validation-for="Email"></span>
+```
+
+Esto permite integrar validaciones extendidas del plugin en formularios .NET sin modificar la estructura de mensajes de validación de Razor.
+
+También puedes seguir usando `data-fv-message-for="nameOId"` si lo prefieres.
+
 
 ## Resumen global
 
-Puedes renderizar errores en bloque con:
 
-```html
-<div data-form-validate-summary hidden></div>
-```
+FormValidate puede mostrar el resumen de errores en un contenedor configurable. Por defecto usa `[data-form-validate-summary]`, pero si el formulario contiene un elemento con `asp-validation-summary="ModelOnly"` o `asp-validation-summary="All"` (como en Razor/.NET), el plugin lo detecta automáticamente y muestra ahí el listado de errores.
 
-## Ejemplo minimo
+Esto permite que el resumen de validaciones extendidas del plugin se integre de forma nativa con la estructura de validación de Razor, sin duplicar contenedores.
+
+Ejemplo Razor:
 
 ```html
 <form data-form-validate>
+  ...
+  <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+  <!-- o -->
+  <div asp-validation-summary="All" class="text-danger"></div>
+  ...
+</form>
+```
+
+Ejemplo clásico:
+
+```html
+<form data-form-validate>
+  ...
+  <div data-form-validate-summary hidden></div>
+  ...
+</form>
+```
+
+
+
+## Ejemplo mínimo
+
+```html
+<form data-form-validate>
+  <input id="email" name="email" type="text" data-fv-no-whitespace="true" data-fv-message-no-whitespace="El email no puede tener espacios." />
+  <!-- El mensaje de error del plugin se mostrará aquí automáticamente por compatibilidad con Razor/.NET -->
+  <span asp-validation-for="email"></span>
+
   <input id="pass" type="password" />
 
   <input
@@ -101,6 +143,29 @@ Puedes renderizar errores en bloque con:
     data-fv-message-equals="La confirmacion no coincide."
   />
   <div data-fv-message-for="passConfirm"></div>
+
+  <button type="submit">Enviar</button>
+</form>
+```
+
+### Ejemplo mínimo con resumen Razor
+
+```html
+<form data-form-validate>
+  <div asp-validation-summary="All" class="text-danger"></div>
+
+  <input id="email" name="email" type="text" data-fv-no-whitespace="true" data-fv-message-no-whitespace="El email no puede tener espacios." />
+  <span asp-validation-for="email"></span>
+
+  <input id="pass" type="password" />
+
+  <input
+    name="passConfirm"
+    type="password"
+    data-fv-equals="#pass"
+    data-fv-message-equals="La confirmacion no coincide."
+  />
+  <span asp-validation-for="passConfirm"></span>
 
   <button type="submit">Enviar</button>
 </form>
