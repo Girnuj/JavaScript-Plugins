@@ -88,29 +88,20 @@
             , validateOnInput = parseBoolean(element.dataset.formValidateOnInput)
             , validateOnBlur = parseBoolean(element.dataset.formValidateOnBlur);
 
-        if (typeof element.dataset.formValidateInvalidClass === 'string' && element.dataset.formValidateInvalidClass.trim()) {
-            options.invalidClass = element.dataset.formValidateInvalidClass.trim();
-        }
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
 
-        if (typeof element.dataset.formValidateValidClass === 'string' && element.dataset.formValidateValidClass.trim()) {
-            options.validClass = element.dataset.formValidateValidClass.trim();
-        }
+        setTrimmedOption('invalidClass', element.dataset.formValidateInvalidClass);
+        setTrimmedOption('validClass', element.dataset.formValidateValidClass);
+        setTrimmedOption('summarySelector', element.dataset.formValidateSummarySelector);
 
-        if (typeof element.dataset.formValidateSummarySelector === 'string' && element.dataset.formValidateSummarySelector.trim()) {
-            options.summarySelector = element.dataset.formValidateSummarySelector.trim();
-        }
-
-        if (focusFirstInvalid !== undefined) {
-            options.focusFirstInvalid = focusFirstInvalid;
-        }
-
-        if (validateOnInput !== undefined) {
-            options.validateOnInput = validateOnInput;
-        }
-
-        if (validateOnBlur !== undefined) {
-            options.validateOnBlur = validateOnBlur;
-        }
+        focusFirstInvalid !== undefined && (options.focusFirstInvalid = focusFirstInvalid);
+        validateOnInput !== undefined && (options.validateOnInput = validateOnInput);
+        validateOnBlur !== undefined && (options.validateOnBlur = validateOnBlur);
 
         return options;
     };

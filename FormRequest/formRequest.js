@@ -164,29 +164,19 @@
             , retryOnStatuses = parseStatusCodes(element.dataset.formRetryStatuses)
             , options = {};
 
-        if (typeof element.dataset.formResponse === 'string' && element.dataset.formResponse.trim()) {
-            options.responseType = element.dataset.formResponse.trim().toLowerCase();
-        }
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
 
-        if (typeof element.dataset.formLoadingClass === 'string' && element.dataset.formLoadingClass.trim()) {
-            options.loadingClass = element.dataset.formLoadingClass.trim();
-        }
-
-        if (typeof element.dataset.formCredentials === 'string' && element.dataset.formCredentials.trim()) {
-            options.credentials = element.dataset.formCredentials.trim();
-        }
-
-        if (typeof element.dataset.formCsrfMeta === 'string' && element.dataset.formCsrfMeta.trim()) {
-            options.csrfMetaName = element.dataset.formCsrfMeta.trim();
-        }
-
-        if (typeof element.dataset.formCsrfHeader === 'string' && element.dataset.formCsrfHeader.trim()) {
-            options.csrfHeaderName = element.dataset.formCsrfHeader.trim();
-        }
-
-        if (typeof element.dataset.formCsrfToken === 'string' && element.dataset.formCsrfToken.trim()) {
-            options.csrfToken = element.dataset.formCsrfToken.trim();
-        }
+        setTrimmedOption('responseType', element.dataset.formResponse, (value) => value.toLowerCase());
+        setTrimmedOption('loadingClass', element.dataset.formLoadingClass);
+        setTrimmedOption('credentials', element.dataset.formCredentials);
+        setTrimmedOption('csrfMetaName', element.dataset.formCsrfMeta);
+        setTrimmedOption('csrfHeaderName', element.dataset.formCsrfHeader);
+        setTrimmedOption('csrfToken', element.dataset.formCsrfToken);
 
         if (typeof element.dataset.formHeaders === 'string' && element.dataset.formHeaders.trim()) {
             const parsedHeaders = parseHeadersFromJson(element.dataset.formHeaders.trim());
@@ -197,41 +187,16 @@
             }
         }
 
-        if (resetOnSuccess !== undefined) {
-            options.resetOnSuccess = resetOnSuccess;
-        }
+        resetOnSuccess !== undefined && (options.resetOnSuccess = resetOnSuccess);
+        sameOrigin !== undefined && (options.sameOrigin = sameOrigin);
+        preventConcurrent !== undefined && (options.preventConcurrent = preventConcurrent);
+        allowedMethods && (options.allowedMethods = allowedMethods);
+        retryOnStatuses && (options.retryOnStatuses = retryOnStatuses);
 
-        if (sameOrigin !== undefined) {
-            options.sameOrigin = sameOrigin;
-        }
-
-        if (preventConcurrent !== undefined) {
-            options.preventConcurrent = preventConcurrent;
-        }
-
-        if (allowedMethods) {
-            options.allowedMethods = allowedMethods;
-        }
-
-        if (retryOnStatuses) {
-            options.retryOnStatuses = retryOnStatuses;
-        }
-
-        if (element.dataset.formTimeout !== undefined) {
-            options.timeoutMs = Math.max(0, parseNumber(element.dataset.formTimeout, FORM_REQUEST_DEFAULTS.timeoutMs));
-        }
-
-        if (element.dataset.formRetryCount !== undefined) {
-            options.retryCount = Math.max(0, Math.floor(parseNumber(element.dataset.formRetryCount, FORM_REQUEST_DEFAULTS.retryCount)));
-        }
-
-        if (element.dataset.formRetryDelay !== undefined) {
-            options.retryDelayMs = Math.max(0, parseNumber(element.dataset.formRetryDelay, FORM_REQUEST_DEFAULTS.retryDelayMs));
-        }
-
-        if (element.dataset.formDebounceGet !== undefined) {
-            options.debounceGetMs = Math.max(0, parseNumber(element.dataset.formDebounceGet, FORM_REQUEST_DEFAULTS.debounceGetMs));
-        }
+        element.dataset.formTimeout !== undefined && (options.timeoutMs = Math.max(0, parseNumber(element.dataset.formTimeout, FORM_REQUEST_DEFAULTS.timeoutMs)));
+        element.dataset.formRetryCount !== undefined && (options.retryCount = Math.max(0, Math.floor(parseNumber(element.dataset.formRetryCount, FORM_REQUEST_DEFAULTS.retryCount))));
+        element.dataset.formRetryDelay !== undefined && (options.retryDelayMs = Math.max(0, parseNumber(element.dataset.formRetryDelay, FORM_REQUEST_DEFAULTS.retryDelayMs)));
+        element.dataset.formDebounceGet !== undefined && (options.debounceGetMs = Math.max(0, parseNumber(element.dataset.formDebounceGet, FORM_REQUEST_DEFAULTS.debounceGetMs)));
 
         return options;
     };

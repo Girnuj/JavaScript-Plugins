@@ -168,41 +168,26 @@
             , parsedDuration = parseNumber(element.dataset.npDuration, 0)
             , headersFromJson = parseHeadersJson(element.dataset.npHeadersJson);
 
-        if (showToast !== undefined) options.showToast = showToast;
-        if (sendRequest !== undefined) options.sendRequest = sendRequest;
-        if (injectDefaultStyles !== undefined) options.injectDefaultStyles = injectDefaultStyles;
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
 
-        if (parsedDuration > 0) {
-            options.defaultDuration = parsedDuration;
-        }
+        showToast !== undefined && (options.showToast = showToast);
+        sendRequest !== undefined && (options.sendRequest = sendRequest);
+        injectDefaultStyles !== undefined && (options.injectDefaultStyles = injectDefaultStyles);
+        parsedDuration > 0 && (options.defaultDuration = parsedDuration);
 
-        if (typeof element.dataset.npType === 'string' && element.dataset.npType.trim()) {
-            options.defaultType = normalizeType(element.dataset.npType, NOTIFICATION_PUSH_DEFAULTS.defaultType);
-        }
+        setTrimmedOption('defaultType', element.dataset.npType, (value) => normalizeType(value, NOTIFICATION_PUSH_DEFAULTS.defaultType));
+        setTrimmedOption('requestMethod', element.dataset.npMethod, (value) => normalizeMethod(value, NOTIFICATION_PUSH_DEFAULTS.requestMethod));
+        setTrimmedOption('endpoint', element.dataset.npEndpoint);
+        setTrimmedOption('credentials', element.dataset.npCredentials);
+        setTrimmedOption('toastClass', element.dataset.npToastClass);
+        setTrimmedOption('toastContainerClass', element.dataset.npToastContainerClass);
 
-        if (typeof element.dataset.npMethod === 'string' && element.dataset.npMethod.trim()) {
-            options.requestMethod = normalizeMethod(element.dataset.npMethod, NOTIFICATION_PUSH_DEFAULTS.requestMethod);
-        }
-
-        if (typeof element.dataset.npEndpoint === 'string' && element.dataset.npEndpoint.trim()) {
-            options.endpoint = element.dataset.npEndpoint.trim();
-        }
-
-        if (typeof element.dataset.npCredentials === 'string' && element.dataset.npCredentials.trim()) {
-            options.credentials = element.dataset.npCredentials.trim();
-        }
-
-        if (typeof element.dataset.npToastClass === 'string' && element.dataset.npToastClass.trim()) {
-            options.toastClass = element.dataset.npToastClass.trim();
-        }
-
-        if (typeof element.dataset.npToastContainerClass === 'string' && element.dataset.npToastContainerClass.trim()) {
-            options.toastContainerClass = element.dataset.npToastContainerClass.trim();
-        }
-
-        if (headersFromJson) {
-            options.headers = headersFromJson;
-        }
+        headersFromJson && (options.headers = headersFromJson);
 
         return options;
     };

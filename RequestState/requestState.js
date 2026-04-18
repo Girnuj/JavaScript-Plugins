@@ -218,70 +218,37 @@
             , retryStatuses = parseStatusCodes(element.dataset.rsRetryStatuses)
             , headersFromJson = parseHeadersJson(element.dataset.rsHeadersJson);
 
-        if (disableOnLoading !== undefined) options.disableOnLoading = disableOnLoading;
-        if (sendRequest !== undefined) options.sendRequest = sendRequest;
-        if (parsedDelay >= 0) options.delayMs = parsedDelay;
-        if (parsedAutoReset >= 0) options.autoResetMs = parsedAutoReset;
-        if (parsedTimeout >= 0) options.timeoutMs = parsedTimeout;
-        if (parsedRetryCount >= 0) options.retryCount = Math.floor(parsedRetryCount);
-        if (parsedRetryDelay >= 0) options.retryDelayMs = parsedRetryDelay;
-        if (retryStatuses) options.retryStatuses = retryStatuses;
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
 
-        if (typeof element.dataset.rsEndpoint === 'string' && element.dataset.rsEndpoint.trim()) {
-            options.endpoint = element.dataset.rsEndpoint.trim();
-        }
+        disableOnLoading !== undefined && (options.disableOnLoading = disableOnLoading);
+        sendRequest !== undefined && (options.sendRequest = sendRequest);
+        parsedDelay >= 0 && (options.delayMs = parsedDelay);
+        parsedAutoReset >= 0 && (options.autoResetMs = parsedAutoReset);
+        parsedTimeout >= 0 && (options.timeoutMs = parsedTimeout);
+        parsedRetryCount >= 0 && (options.retryCount = Math.floor(parsedRetryCount));
+        parsedRetryDelay >= 0 && (options.retryDelayMs = parsedRetryDelay);
+        retryStatuses && (options.retryStatuses = retryStatuses);
 
-        if (typeof element.dataset.rsMethod === 'string' && element.dataset.rsMethod.trim()) {
-            options.method = normalizeMethod(element.dataset.rsMethod, REQUEST_STATE_DEFAULTS.method);
-        }
+        setTrimmedOption('endpoint', element.dataset.rsEndpoint);
+        setTrimmedOption('method', element.dataset.rsMethod, (value) => normalizeMethod(value, REQUEST_STATE_DEFAULTS.method));
+        setTrimmedOption('credentials', element.dataset.rsCredentials);
+        setTrimmedOption('loadingClass', element.dataset.rsLoadingClass);
+        setTrimmedOption('successClass', element.dataset.rsSuccessClass);
+        setTrimmedOption('errorClass', element.dataset.rsErrorClass);
+        setTrimmedOption('idleClass', element.dataset.rsIdleClass);
+        setTrimmedOption('loadingText', element.dataset.rsLoadingText);
+        setTrimmedOption('successText', element.dataset.rsSuccessText);
+        setTrimmedOption('errorText', element.dataset.rsErrorText);
+        setTrimmedOption('responseTarget', element.dataset.rsResponseTarget);
+        setTrimmedOption('responseMode', element.dataset.rsResponseMode, (value) => value.toLowerCase());
+        setTrimmedOption('mockResult', element.dataset.rsMock, (value) => value.toLowerCase());
 
-        if (typeof element.dataset.rsCredentials === 'string' && element.dataset.rsCredentials.trim()) {
-            options.credentials = element.dataset.rsCredentials.trim();
-        }
-
-        if (typeof element.dataset.rsLoadingClass === 'string' && element.dataset.rsLoadingClass.trim()) {
-            options.loadingClass = element.dataset.rsLoadingClass.trim();
-        }
-
-        if (typeof element.dataset.rsSuccessClass === 'string' && element.dataset.rsSuccessClass.trim()) {
-            options.successClass = element.dataset.rsSuccessClass.trim();
-        }
-
-        if (typeof element.dataset.rsErrorClass === 'string' && element.dataset.rsErrorClass.trim()) {
-            options.errorClass = element.dataset.rsErrorClass.trim();
-        }
-
-        if (typeof element.dataset.rsIdleClass === 'string' && element.dataset.rsIdleClass.trim()) {
-            options.idleClass = element.dataset.rsIdleClass.trim();
-        }
-
-        if (typeof element.dataset.rsLoadingText === 'string' && element.dataset.rsLoadingText.trim()) {
-            options.loadingText = element.dataset.rsLoadingText.trim();
-        }
-
-        if (typeof element.dataset.rsSuccessText === 'string' && element.dataset.rsSuccessText.trim()) {
-            options.successText = element.dataset.rsSuccessText.trim();
-        }
-
-        if (typeof element.dataset.rsErrorText === 'string' && element.dataset.rsErrorText.trim()) {
-            options.errorText = element.dataset.rsErrorText.trim();
-        }
-
-        if (typeof element.dataset.rsResponseTarget === 'string' && element.dataset.rsResponseTarget.trim()) {
-            options.responseTarget = element.dataset.rsResponseTarget.trim();
-        }
-
-        if (typeof element.dataset.rsResponseMode === 'string' && element.dataset.rsResponseMode.trim()) {
-            options.responseMode = element.dataset.rsResponseMode.trim().toLowerCase();
-        }
-
-        if (typeof element.dataset.rsMock === 'string' && element.dataset.rsMock.trim()) {
-            options.mockResult = element.dataset.rsMock.trim().toLowerCase();
-        }
-
-        if (headersFromJson) {
-            options.headers = headersFromJson;
-        }
+        headersFromJson && (options.headers = headersFromJson);
 
         return options;
     };

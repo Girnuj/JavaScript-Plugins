@@ -84,21 +84,17 @@
         const options = {}
             , stateClassMap = {};
 
-        if (typeof element.dataset.uiStateBase === 'string' && element.dataset.uiStateBase.trim()) {
-            options.baseState = element.dataset.uiStateBase.trim();
-        }
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
 
-        if (typeof element.dataset.uiStateClassPrefix === 'string' && element.dataset.uiStateClassPrefix.trim()) {
-            options.classPrefix = element.dataset.uiStateClassPrefix.trim();
-        }
-
-        if (typeof element.dataset.uiStateDisableOn === 'string' && element.dataset.uiStateDisableOn.trim()) {
-            options.disableOnStates = parseList(element.dataset.uiStateDisableOn);
-        }
-
-        if (typeof element.dataset.uiStateInteractiveSelector === 'string' && element.dataset.uiStateInteractiveSelector.trim()) {
-            options.interactiveSelector = element.dataset.uiStateInteractiveSelector.trim();
-        }
+        setTrimmedOption('baseState', element.dataset.uiStateBase);
+        setTrimmedOption('classPrefix', element.dataset.uiStateClassPrefix);
+        setTrimmedOption('disableOnStates', element.dataset.uiStateDisableOn, parseList);
+        setTrimmedOption('interactiveSelector', element.dataset.uiStateInteractiveSelector);
 
         Object.keys(element.dataset).forEach((dataKey) => {
             if (!dataKey.startsWith('uiStateClass') || dataKey === 'uiStateClassPrefix') return;
@@ -111,9 +107,7 @@
             stateClassMap[stateName] = classValue.trim();
         });
 
-        if (Object.keys(stateClassMap).length > 0) {
-            options.stateClassMap = stateClassMap;
-        }
+        Object.keys(stateClassMap).length > 0 && (options.stateClassMap = stateClassMap);
 
         return options;
     };

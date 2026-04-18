@@ -154,6 +154,13 @@
             return legacyKey ? element.dataset[legacyKey] : undefined;
         };
 
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
+
         const endpoint = getDataValue('pagerEndpoint', 'ipEndpoint')
             , targetSelector = getDataValue('pagerTarget', 'ipTarget')
             , sentinelSelector = getDataValue('pagerSentinel', 'ipSentinel')
@@ -183,73 +190,24 @@
             , stopOnEmpty = parseBoolean(stopOnEmptyRaw)
             , autoLoadOnInit = parseBoolean(autoLoadOnInitRaw);
 
-        if (typeof endpoint === 'string' && endpoint.trim()) {
-            options.endpoint = endpoint.trim();
-        }
+        setTrimmedOption('endpoint', endpoint);
+        setTrimmedOption('targetSelector', targetSelector);
+        setTrimmedOption('sentinelSelector', sentinelSelector);
+        setTrimmedOption('pageParam', pageParam);
+        setTrimmedOption('pageSizeParam', pageSizeParam);
+        setTrimmedOption('htmlPath', htmlPath);
+        setTrimmedOption('itemsPath', itemsPath);
+        setTrimmedOption('hasMorePath', hasMorePath);
+        setTrimmedOption('nextPagePath', nextPagePath);
+        setTrimmedOption('rootMargin', rootMargin);
+        setTrimmedOption('credentials', credentials);
+        setTrimmedOption('loadingClass', loadingClass);
+        setTrimmedOption('disabledClass', disabledClass);
 
-        if (typeof targetSelector === 'string' && targetSelector.trim()) {
-            options.targetSelector = targetSelector.trim();
-        }
-
-        if (typeof sentinelSelector === 'string' && sentinelSelector.trim()) {
-            options.sentinelSelector = sentinelSelector.trim();
-        }
-
-        if (typeof pageParam === 'string' && pageParam.trim()) {
-            options.pageParam = pageParam.trim();
-        }
-
-        if (typeof pageSizeParam === 'string' && pageSizeParam.trim()) {
-            options.pageSizeParam = pageSizeParam.trim();
-        }
-
-        if (typeof htmlPath === 'string' && htmlPath.trim()) {
-            options.htmlPath = htmlPath.trim();
-        }
-
-        if (typeof itemsPath === 'string' && itemsPath.trim()) {
-            options.itemsPath = itemsPath.trim();
-        }
-
-        if (typeof hasMorePath === 'string' && hasMorePath.trim()) {
-            options.hasMorePath = hasMorePath.trim();
-        }
-
-        if (typeof nextPagePath === 'string' && nextPagePath.trim()) {
-            options.nextPagePath = nextPagePath.trim();
-        }
-
-        if (typeof rootMargin === 'string' && rootMargin.trim()) {
-            options.rootMargin = rootMargin.trim();
-        }
-
-        if (typeof credentials === 'string' && credentials.trim()) {
-            options.credentials = credentials.trim();
-        }
-
-        if (typeof loadingClass === 'string' && loadingClass.trim()) {
-            options.loadingClass = loadingClass.trim();
-        }
-
-        if (typeof disabledClass === 'string' && disabledClass.trim()) {
-            options.disabledClass = disabledClass.trim();
-        }
-
-        if (headers) {
-            options.headers = headers;
-        }
-
-        if (initialPage !== undefined) {
-            options.initialPage = Math.max(1, Math.floor(parseNumber(initialPage, INFINITE_PAGER_DEFAULTS.initialPage)));
-        }
-
-        if (pageSize !== undefined) {
-            options.pageSize = Math.max(1, Math.floor(parseNumber(pageSize, INFINITE_PAGER_DEFAULTS.pageSize)));
-        }
-
-        if (threshold !== undefined) {
-            options.threshold = Math.max(0, parseNumber(threshold, INFINITE_PAGER_DEFAULTS.threshold));
-        }
+        headers && (options.headers = headers);
+        initialPage !== undefined && (options.initialPage = Math.max(1, Math.floor(parseNumber(initialPage, INFINITE_PAGER_DEFAULTS.initialPage))));
+        pageSize !== undefined && (options.pageSize = Math.max(1, Math.floor(parseNumber(pageSize, INFINITE_PAGER_DEFAULTS.pageSize))));
+        threshold !== undefined && (options.threshold = Math.max(0, parseNumber(threshold, INFINITE_PAGER_DEFAULTS.threshold)));
 
         if (method) options.method = method;
         if (mode) options.mode = mode;

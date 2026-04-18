@@ -110,33 +110,21 @@
             , clearOnSubmit = parseBoolean(element.dataset.fdClearOnSubmit)
             , clearOnFormRequestSuccess = parseBoolean(element.dataset.fdClearOnFormRequestSuccess);
 
-        if (typeof element.dataset.fdStorage === 'string' && element.dataset.fdStorage.trim()) {
-            options.storage = normalizeStorageName(element.dataset.fdStorage);
-        }
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
 
-        if (typeof element.dataset.fdKeyPrefix === 'string' && element.dataset.fdKeyPrefix.trim()) {
-            options.keyPrefix = element.dataset.fdKeyPrefix.trim();
-        }
+        setTrimmedOption('storage', element.dataset.fdStorage, normalizeStorageName);
+        setTrimmedOption('keyPrefix', element.dataset.fdKeyPrefix);
+        setTrimmedOption('key', element.dataset.fdKey);
+        setTrimmedOption('includeSelector', element.dataset.fdInclude);
+        setTrimmedOption('excludeSelector', element.dataset.fdExclude);
 
-        if (typeof element.dataset.fdKey === 'string' && element.dataset.fdKey.trim()) {
-            options.key = element.dataset.fdKey.trim();
-        }
-
-        if (typeof element.dataset.fdInclude === 'string' && element.dataset.fdInclude.trim()) {
-            options.includeSelector = element.dataset.fdInclude.trim();
-        }
-
-        if (typeof element.dataset.fdExclude === 'string' && element.dataset.fdExclude.trim()) {
-            options.excludeSelector = element.dataset.fdExclude.trim();
-        }
-
-        if (element.dataset.fdDebounce !== undefined) {
-            options.debounceMs = Math.max(0, parseNumber(element.dataset.fdDebounce, FORM_DRAFT_DEFAULTS.debounceMs));
-        }
-
-        if (element.dataset.fdMaxAge !== undefined) {
-            options.maxAgeMs = Math.max(0, parseNumber(element.dataset.fdMaxAge, FORM_DRAFT_DEFAULTS.maxAgeMs));
-        }
+        element.dataset.fdDebounce !== undefined && (options.debounceMs = Math.max(0, parseNumber(element.dataset.fdDebounce, FORM_DRAFT_DEFAULTS.debounceMs)));
+        element.dataset.fdMaxAge !== undefined && (options.maxAgeMs = Math.max(0, parseNumber(element.dataset.fdMaxAge, FORM_DRAFT_DEFAULTS.maxAgeMs)));
 
         if (saveOnInput !== undefined) options.saveOnInput = saveOnInput;
         if (saveOnChange !== undefined) options.saveOnChange = saveOnChange;

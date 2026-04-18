@@ -77,65 +77,32 @@
         const options = {}
             , enabled = parseBoolean(element.dataset.caEnabled);
 
-        if (typeof element.dataset.caMessage === 'string' && element.dataset.caMessage.trim()) {
-            options.message = element.dataset.caMessage.trim();
-        }
-
-        if (typeof element.dataset.caTitle === 'string' && element.dataset.caTitle.trim()) {
-            options.title = element.dataset.caTitle.trim();
-        }
-
-        if (typeof element.dataset.caDialog === 'string' && element.dataset.caDialog.trim()) {
-            options.dialogSelector = element.dataset.caDialog.trim();
-        }
-
-        if (typeof element.dataset.caConfirmText === 'string' && element.dataset.caConfirmText.trim()) {
-            options.confirmText = element.dataset.caConfirmText.trim();
-        }
-
-        if (typeof element.dataset.caCancelText === 'string' && element.dataset.caCancelText.trim()) {
-            options.cancelText = element.dataset.caCancelText.trim();
-        }
-
-        if (typeof element.dataset.caDenyText === 'string' && element.dataset.caDenyText.trim()) {
-            options.denyText = element.dataset.caDenyText.trim();
-        }
-
-        if (typeof element.dataset.caConfirmClass === 'string' && element.dataset.caConfirmClass.trim()) {
-            options.confirmClass = element.dataset.caConfirmClass.trim();
-        }
-
-        if (typeof element.dataset.caCancelClass === 'string' && element.dataset.caCancelClass.trim()) {
-            options.cancelClass = element.dataset.caCancelClass.trim();
-        }
-
-        if (typeof element.dataset.caDenyClass === 'string' && element.dataset.caDenyClass.trim()) {
-            options.denyClass = element.dataset.caDenyClass.trim();
-        }
-
-        if (typeof element.dataset.caLoadingClass === 'string' && element.dataset.caLoadingClass.trim()) {
-            options.loadingClass = element.dataset.caLoadingClass.trim();
-        }
+        const setTrimmedOption = (key, value, transform) => {
+            if (typeof value !== 'string') return;
+            const trimmedValue = value.trim();
+            if (!trimmedValue) return;
+            options[key] = typeof transform === 'function' ? transform(trimmedValue) : trimmedValue;
+        };
 
         const allowEscape = parseBoolean(element.dataset.caAllowEscape)
             , allowOutsideClick = parseBoolean(element.dataset.caAllowOutsideClick)
             , focusConfirm = parseBoolean(element.dataset.caFocusConfirm);
 
-        if (allowEscape !== undefined) {
-            options.allowEscape = allowEscape;
-        }
+        setTrimmedOption('message', element.dataset.caMessage);
+        setTrimmedOption('title', element.dataset.caTitle);
+        setTrimmedOption('dialogSelector', element.dataset.caDialog);
+        setTrimmedOption('confirmText', element.dataset.caConfirmText);
+        setTrimmedOption('cancelText', element.dataset.caCancelText);
+        setTrimmedOption('denyText', element.dataset.caDenyText);
+        setTrimmedOption('confirmClass', element.dataset.caConfirmClass);
+        setTrimmedOption('cancelClass', element.dataset.caCancelClass);
+        setTrimmedOption('denyClass', element.dataset.caDenyClass);
+        setTrimmedOption('loadingClass', element.dataset.caLoadingClass);
 
-        if (allowOutsideClick !== undefined) {
-            options.allowOutsideClick = allowOutsideClick;
-        }
-
-        if (focusConfirm !== undefined) {
-            options.focusConfirm = focusConfirm;
-        }
-
-        if (enabled !== undefined) {
-            options.enabled = enabled;
-        }
+        allowEscape !== undefined && (options.allowEscape = allowEscape);
+        allowOutsideClick !== undefined && (options.allowOutsideClick = allowOutsideClick);
+        focusConfirm !== undefined && (options.focusConfirm = focusConfirm);
+        enabled !== undefined && (options.enabled = enabled);
 
         return options;
     };
@@ -157,18 +124,18 @@
      * @property {string} [title=''] Titulo opcional del prompt.
      * @property {boolean} [enabled=true] Activa o desactiva la confirmacion.
      * @property {string} [dialogSelector=''] Selector CSS de contenedor/dialog custom.
-    * @property {(detail: ConfirmActionDetail, element: HTMLElement) => (boolean|'confirm'|'cancel'|'deny'|Promise<boolean|'confirm'|'cancel'|'deny'>)} [confirmAdapter] Adapter custom sync/async para resolver confirmacion.
-    * @property {(detail: ConfirmActionDetail, element: HTMLElement) => (boolean|'confirm'|'cancel'|'deny'|Promise<boolean|'confirm'|'cancel'|'deny'>)} [preConfirm] Hook async previo a confirmar.
-    * @property {string} [confirmText='Confirmar'] Texto del boton confirmar.
-    * @property {string} [cancelText='Cancelar'] Texto del boton cancelar.
-    * @property {string} [denyText=''] Texto del boton deny (si existe).
-    * @property {string} [confirmClass=''] Clase CSS adicional para confirmar.
-    * @property {string} [cancelClass=''] Clase CSS adicional para cancelar.
-    * @property {string} [denyClass=''] Clase CSS adicional para deny.
-    * @property {string} [loadingClass='is-loading'] Clase aplicada mientras `preConfirm` esta en ejecucion.
-    * @property {boolean} [allowEscape=true] Permite cerrar con Escape.
-    * @property {boolean} [allowOutsideClick=true] Permite cerrar haciendo click fuera del dialog custom.
-    * @property {boolean} [focusConfirm=true] Enfoca el boton confirmar al abrir dialog custom.
+     * @property {(detail: ConfirmActionDetail, element: HTMLElement) => (boolean|'confirm'|'cancel'|'deny'|Promise<boolean|'confirm'|'cancel'|'deny'>)} [confirmAdapter] Adapter custom sync/async para resolver confirmacion.
+     * @property {(detail: ConfirmActionDetail, element: HTMLElement) => (boolean|'confirm'|'cancel'|'deny'|Promise<boolean|'confirm'|'cancel'|'deny'>)} [preConfirm] Hook async previo a confirmar.
+     * @property {string} [confirmText='Confirmar'] Texto del boton confirmar.
+     * @property {string} [cancelText='Cancelar'] Texto del boton cancelar.
+     * @property {string} [denyText=''] Texto del boton deny (si existe).
+     * @property {string} [confirmClass=''] Clase CSS adicional para confirmar.
+     * @property {string} [cancelClass=''] Clase CSS adicional para cancelar.
+     * @property {string} [denyClass=''] Clase CSS adicional para deny.
+     * @property {string} [loadingClass='is-loading'] Clase aplicada mientras `preConfirm` esta en ejecucion.
+     * @property {boolean} [allowEscape=true] Permite cerrar con Escape.
+     * @property {boolean} [allowOutsideClick=true] Permite cerrar haciendo click fuera del dialog custom.
+     * @property {boolean} [focusConfirm=true] Enfoca el boton confirmar al abrir dialog custom.
      * @property {(detail: ConfirmActionDetail, element: HTMLElement) => void} [beforeConfirm] Hook previo a la confirmacion.
      * @property {(detail: ConfirmActionDetail, element: HTMLElement) => void} [onConfirm] Hook cuando el usuario confirma.
      * @property {(detail: ConfirmActionDetail, element: HTMLElement) => void} [onCancel] Hook cuando el usuario cancela.
@@ -723,11 +690,9 @@
         ConfirmAction.initAll(document);
     };
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bootstrap, { once: true });
-    } else {
-        bootstrap();
-    }
+    document.readyState === 'loading'
+        ? document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
+        : bootstrap();
 
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
