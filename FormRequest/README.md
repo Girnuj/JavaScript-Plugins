@@ -167,3 +167,20 @@ Patron recomendado:
 - `FormValidate` decide si se permite el submit.
 - `FormRequest` es el unico responsable del envio real por `fetch`.
 - `RequestState` se usa para UX visual y bloqueo de interaccion, sin duplicar el request.
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-form-request>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-form-request
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

@@ -145,3 +145,20 @@ State after replacing content by clicking buttons in the HTML:
 
 ![ReplaceMe with replaced content](./img/image2.png)
 
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-replace-me>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-replace-me
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

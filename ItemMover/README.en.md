@@ -142,3 +142,20 @@ State with some items moved from their original position:
 
 ![ItemMover with moved items](./img/image2.png)
 
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-item-mover>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-item-mover
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

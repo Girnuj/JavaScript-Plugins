@@ -169,3 +169,20 @@ State after selecting values in the second and third selects:
 
 ![ChildSelect with second and third select values](./img/image3.png)
 
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-child-select>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-child-select
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

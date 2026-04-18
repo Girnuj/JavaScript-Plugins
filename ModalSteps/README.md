@@ -150,3 +150,20 @@ Segundo paso del flujo:
 Ultimo modal del flujo:
 
 ![ModalSteps ultimo modal](./img/image4.png)
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-modal-steps>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-modal-steps
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

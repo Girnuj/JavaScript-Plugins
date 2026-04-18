@@ -125,3 +125,20 @@ State with some inputs checked and others unchecked:
 
 ![InputSwitchFriendly with mixed checks](./img/image2.png)
 
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-input-switch-friendly>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-input-switch-friendly
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

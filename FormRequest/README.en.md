@@ -167,3 +167,20 @@ Main methods:
 ## Demo
 
 - `test-form-request.html`
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-form-request>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-form-request
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

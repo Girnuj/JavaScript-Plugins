@@ -108,3 +108,20 @@ Nota: `FormDraft` limpia el borrador persistido (storage). Si tambien quieres li
 ## Demo
 
 - `test-form-draft.html`
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-form-draft>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-form-draft
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

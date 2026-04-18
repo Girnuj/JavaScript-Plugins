@@ -121,3 +121,20 @@ El modal dispara eventos sobre su propio elemento:
 - `hidden.plugin.modal`
 
 Cada evento expone en `event.detail.relatedTarget` el elemento relacionado con la accion (si aplica).
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-modal>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-modal
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

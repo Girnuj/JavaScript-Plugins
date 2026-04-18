@@ -152,3 +152,20 @@ Estado con una imagen seleccionada en el input (se muestra la vista previa):
 
 ![ImgUploadPreview con imagen seleccionada](./img/image2.png)
 
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-img-upload-preview>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-img-upload-preview
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

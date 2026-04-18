@@ -106,3 +106,20 @@ Compatibilidad: `data-ip-*` sigue soportado temporalmente por retrocompatibilida
 
 - `test-infinite-pager.html`
 - `test-infinite-pager-scroll.html`
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-infinite-pager>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-infinite-pager
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

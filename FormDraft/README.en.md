@@ -108,3 +108,20 @@ Note: `FormDraft` clears persisted draft data (storage). If you also want to cle
 ## Demo
 
 - `test-form-draft.html`
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-form-draft>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-form-draft
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

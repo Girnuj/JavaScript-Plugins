@@ -222,3 +222,20 @@ Metodos principales:
 Muestra del HTML de ejemplo con algunas notificaciones:
 
 ![Vista previa NotificationPush](./img/image.png)
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-notification-push>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-notification-push
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

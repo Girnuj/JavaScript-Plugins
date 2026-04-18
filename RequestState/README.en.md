@@ -255,3 +255,20 @@ Main methods:
 ## Demo
 
 - `test-request-state.html`
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-request-state>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-request-state
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

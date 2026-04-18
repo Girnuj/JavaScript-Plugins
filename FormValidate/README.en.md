@@ -276,3 +276,20 @@ Main methods:
 ## Demo
 
 - `test-form-validate.html`
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-form-validate>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-form-validate
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

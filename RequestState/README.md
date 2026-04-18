@@ -255,3 +255,20 @@ Metodos principales:
 ## Demo
 
 - `test-request-state.html`
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-request-state>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-request-state
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

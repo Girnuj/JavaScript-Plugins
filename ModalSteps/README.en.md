@@ -150,3 +150,20 @@ Second step in the flow:
 Final modal in the flow:
 
 ![ModalSteps final modal](./img/image4.png)
+
+## Plugin Observer Configuration
+
+If you want to scope this plugin `MutationObserver` to a specific container, define a direct root:
+
+```html
+<section data-pp-observe-root-modal-steps>...</section>
+```
+
+Plugin root priority:
+
+1. `
+data-pp-observe-root-modal-steps
+`
+2. `data-pp-observe-root` on `<html>`
+3. `document.body`
+

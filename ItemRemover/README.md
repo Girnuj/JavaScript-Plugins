@@ -129,3 +129,20 @@ Estado despues de agregar algunos items y eliminar otros:
 
 ![ItemRemover con items agregados y eliminados](./img/image2.png)
 
+
+## Configuracion Del Observer Del Plugin
+
+Si quieres limitar el `MutationObserver` de este plugin a un contenedor especifico, define un root directo:
+
+```html
+<section data-pp-observe-root-item-remover>...</section>
+```
+
+Prioridad de root para el plugin:
+
+1. `
+data-pp-observe-root-item-remover
+`
+2. `data-pp-observe-root` en `<html>`
+3. `document.body`
+

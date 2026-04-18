@@ -113,3 +113,9 @@ Estado despues de cambiar los valores de los inputs y hacer click en Renderizar:
 
 ![TemplateRenderizer con valores renderizados](./img/image2.png)
 
+## Configuracion Del Observer Del Plugin
+
+Este plugin no registra `MutationObserver` automatico ni expone un atributo `data-pp-observe-root-*` propio.
+
+La inicializacion y uso se realizan directamente por JavaScript con `new templateRenderizer(...)`.
+

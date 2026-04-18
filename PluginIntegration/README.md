@@ -41,6 +41,59 @@ Con este enfoque se evita duplicar responsabilidades y es mas facil depurar.
 - Manten targets de UI separados para estado, respuesta y notificaciones.
 - En demos locales, usa mocks de fetch para no depender de backend.
 
+## Estrategia de observers por plugin
+
+Cuando varios plugins conviven en una sola vista, conviene definir roots directos por plugin para limitar el alcance del `MutationObserver` y mejorar rendimiento.
+
+Importante:
+
+- Los plugins tambien pueden usarse sin declarar roots directos; en ese caso aplican su fallback normal (`data-pp-observe-root` en `<html>` o `document.body`).
+- Puedes declarar varios observers en un mismo elemento si ese contenedor comparte responsabilidades de varios plugins.
+
+Ejemplo recomendado:
+
+```html
+<main id="integration-root">
+	<section data-pp-observe-root-form-request>...</section>
+	<section data-pp-observe-root-request-state>...</section>
+	<section data-pp-observe-root-notification-push>...</section>
+	<section data-pp-observe-root-form-validate>...</section>
+	<section data-pp-observe-root-confirm-action>...</section>
+</main>
+```
+
+Tambien es valido concentrar varios atributos en un solo nodo:
+
+```html
+<section
+	data-pp-observe-root-form-request
+	data-pp-observe-root-request-state
+	data-pp-observe-root-notification-push
+>
+	...
+</section>
+```
+
+Regla de prioridad por plugin:
+
+1. `data-pp-observe-root-{plugin}`
+2. `data-pp-observe-root` definido en `<html>`
+3. `document.body`
+
+Si prefieres inicializacion manual total para escenarios muy controlados:
+
+```html
+<html data-pp-observe-global="false"></html>
+<script>
+	window.Modal.initAll(document);
+	window.FormValidate.initAll(document);
+	window.ConfirmAction.initAll(document);
+	window.FormRequest.initAll(document);
+	window.RequestState.initAll(document);
+	window.NotificationPush.initAll(document);
+</script>
+```
+
 ## Nota
 
 Este ejemplo esta pensado para aprendizaje y pruebas de integracion. Puedes copiar el patron y ajustarlo por modulo o por pantalla en tu proyecto real.
