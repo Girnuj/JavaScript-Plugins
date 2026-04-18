@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test QuerySyncState</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 24px;
+      line-height: 1.4;
+      color: #1f2937;
+    }
+
+    .panel {
+      max-width: 880px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      background: #fff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    input, select, button {
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    button {
+      background: #0f766e;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #115e59;
+    }
+
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      background: #0b1220;
+      color: #e5e7eb;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .muted {
+      font-size: 12px;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <!-- Cabecera de demo: explica rapidamente que se valida en esta pagina -->
+  <h1>QuerySyncState - Demo</h1>
+  <p class="muted">Cambia filtros y revisa como se actualiza la URL. Usa atras/adelante del navegador para validar rehidratacion.</p>
+
+  <!-- Controles sincronizados con query params -->
+  <section class="panel" data-pp-observe-root-query-sync-state>
+    <div class="grid">
+      <div class="field">
+        <label for="txtSearch">Busqueda (q)</label>
+        <input
+          id="txtSearch"
+          type="search"
+          placeholder="Ej: teclado"
+          data-role="query-sync-state"
+          data-qss-key="q"
+          data-qss-type="string"
+          data-qss-history="replace"
+          data-qss-debounce="250"
+          data-qss-trim="true"
+        />
+      </div>
+
+      <div class="field">
+        <label for="slSort">Orden (sort)</label>
+        <select
+          id="slSort"
+          data-role="query-sync-state"
+          data-qss-key="sort"
+          data-qss-type="string"
+          data-qss-history="push"
+          data-qss-default="relevancia"
+          data-qss-omit-default="true"
+          data-qss-reset-page-key="page"
+        >
+          <option value="relevancia">Relevancia</option>
+          <option value="precio-asc">Precio: menor a mayor</option>
+          <option value="precio-desc">Precio: mayor a menor</option>
+          <option value="nombre-asc">Nombre A-Z</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="ckStock">Solo con stock (inStock)</label>
+        <input
+          id="ckStock"
+          type="checkbox"
+          value="1"
+          data-role="query-sync-state"
+          data-qss-key="inStock"
+          data-qss-type="boolean"
+          data-qss-default="false"
+          data-qss-omit-default="true"
+          data-qss-history="replace"
+          data-qss-reset-page-key="page"
+        />
+      </div>
+
+      <div class="field">
+        <label for="slPage">Pagina (page)</label>
+        <select
+          id="slPage"
+          data-role="query-sync-state"
+          data-qss-key="page"
+          data-qss-type="number"
+          data-qss-default="1"
+          data-qss-omit-default="true"
+          data-qss-history="push"
+        >
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+    </div>
+  </section>
+
+  <!-- Panel de inspeccion para observar URL final y payload del ultimo evento -->
+  <section class="panel">
+    <div class="grid">
+      <div class="field">
+        <label>URL actual</label>
+        <pre id="currentUrl"></pre>
+      </div>
+      <div class="field">
+        <label>Ultimo evento</label>
+        <pre id="eventLog">Sin eventos todavia.</pre>
+      </div>
+    </div>
+
+    <p style="margin-top: 12px;">
+      <button id="btnReset">Reset a defaults</button>
+    </p>
+  </section>
+
+  <script src="querySyncState.js"></script>
+  <script>
+    (function () {
+      // Referencias de nodos para reflejar estado de la demo en tiempo real.
+      const currentUrlNode = document.getElementById('currentUrl');
+      const eventLogNode = document.getElementById('eventLog');
+      const resetButton = document.getElementById('btnReset');
+
+      // Refresca el panel con la URL visible actual del navegador.
+      const refreshUrlPanel = () => {
+        currentUrlNode.textContent = window.location.href;
+      };
+
+      // Escucha eventos del plugin para mostrar feedback de sincronizacion.
+      const bindSyncLogs = () => {
+        document.querySelectorAll('[data-role="query-sync-state"]').forEach((element) => {
+          element.addEventListener('sync.plugin.querySyncState', function (event) {
+            const detail = event.detail || {};
+            eventLogNode.textContent = JSON.stringify({
+              key: detail.key,
+              source: detail.source,
+              value: detail.value,
+              nextUrl: detail.nextUrl || window.location.href,
+            }, null, 2);
+            refreshUrlPanel();
+          });
+
+          element.addEventListener('complete.plugin.querySyncState', refreshUrlPanel);
+        });
+      };
+
+      // Reinicia cada control al valor default configurado y sincroniza URL.
+      resetButton.addEventListener('click', function () {
+        document.querySelectorAll('[data-role="query-sync-state"]').forEach((element) => {
+          const instance = window.QuerySyncState.getInstance(element);
+          if (instance) {
+            instance.reset({ syncToUrl: true });
+          }
+        });
+        refreshUrlPanel();
+      });
+
+      refreshUrlPanel();
+      bindSyncLogs();
+    })();
+  </script>
+</body>
+</html>

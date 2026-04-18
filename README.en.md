@@ -36,6 +36,7 @@ ECMAScript 2020 is supported by most modern browsers.
 - [Modal](Modal/): opens and closes modals using HTML triggers with `data-*` attributes and optional API.
 - [ModalSteps](ModalSteps/): runs step-based modal flows with remote content loading, `POST`/`GET` support, and events to control each stage.
 - [NotificationPush](NotificationPush/): triggers toast notifications and sends dynamic `data-np-*` payload to a receiver or endpoint without local cache.
+- [QuerySyncState](QuerySyncState/): syncs UI controls with query params for shareable links, back/forward navigation, and persistent filters.
 - [ReplaceMe](ReplaceMe/): replaces a trigger with remote HTML fetched through `POST` or `GET`.
 - [RequestState](RequestState/): centralizes `idle/loading/success/error` states for async actions, with mock mode for QA and optional request flow.
 - [TemplateRenderizer](TemplateRenderizer/): renders HTML templates by replacing placeholders like `{{property}}` and nested paths.
@@ -123,6 +124,7 @@ Priority rule: direct plugin root > selector root on `<html>` > `document.body`.
 - `FormDraft`: `data-pp-observe-root-form-draft`
 - `RequestState`: `data-pp-observe-root-request-state`
 - `NotificationPush`: `data-pp-observe-root-notification-push`
+- `QuerySyncState`: `data-pp-observe-root-query-sync-state`
 - `UIState`: `data-pp-observe-root-ui-state`
 - `ChildSelect`: `data-pp-observe-root-child-select`
 - `ConfirmAction`: `data-pp-observe-root-confirm-action`
