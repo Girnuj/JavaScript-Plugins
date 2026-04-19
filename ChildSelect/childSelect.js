@@ -25,7 +25,7 @@
 				*/
 			   function resolveRoot(pluginKey) {
 				   // 1. data-pp-observe-root-{plugin}
-				   const attr = 'data-pp-observe-root-' + pluginKey
+				   const attr = `data-pp-observe-root-${pluginKey}`
 					   , specific = document.querySelector(`[${attr}]`);
 				   if (specific) return specific;
 
@@ -727,7 +727,6 @@
 		});
 	};
 
-
 	const startAutoInit = () => {
 		ChildSelect.initAll(document);
 		// Usar ObserverDispatcher para registrar el handler solo sobre el root adecuado
@@ -738,6 +737,5 @@
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 		: startAutoInit();
 
-	window.Plugins = window.Plugins || {};
 	window.Plugins.ChildSelect = ChildSelect;
 })();

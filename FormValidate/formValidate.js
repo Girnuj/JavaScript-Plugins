@@ -15,7 +15,7 @@
      */
     if (!window.Plugins) window.Plugins = {};
     if (!window.Plugins.ObserverDispatcher) {
-        window.Plugins.ObserverDispatcher = +function() {
+        window.Plugins.ObserverDispatcher = (function() {
             // Mapa: rootElement => { observer, handlers[] }
             const roots = new WeakMap();
 
@@ -70,7 +70,7 @@
             }
 
             return { register };
-        }();
+        })();
     }
 
     /**
@@ -362,7 +362,7 @@
      * @property {boolean} [focusFirstInvalid=true] Enfoca el primer campo invalido en submit.
      * @property {boolean} [validateOnInput=true] Revalida durante eventos input.
      * @property {boolean} [validateOnBlur=true] Revalida durante eventos blur.
-    * @property {Object<string, Function>|null} [customRules=null] Reglas custom por instancia ({ nombreRegla: fn }).
+     * @property {Object<string, Function>|null} [customRules=null] Reglas custom por instancia ({ nombreRegla: fn }).
      * @property {(form: HTMLFormElement) => void} [beforeValidate] Hook antes de validar.
      * @property {(errors: ValidationError[], form: HTMLFormElement) => void} [afterValidate] Hook despues de validar.
      */
@@ -1345,20 +1345,18 @@
             return Array.from(CUSTOM_RULES.keys());
         }
     }
-
-    window.Plugins = window.Plugins || {};
-    window.Plugins.FormValidate = FormValidate;
-
+  
     /**
      * Inicializa automaticamente las instancias del plugin y observa cambios en el DOM.
      *
      * @returns {void}
      */
-    // Handler para mutaciones DOM (alta/baja de formularios)
+    // Handler para mutaciones DOM relacionadas con FormValidate
     const formValidateDomHandler = (mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 if (!(node instanceof Element)) return;
+                PENDING_REMOVALS.delete(node);
                 FormValidate.initAll(node);
             });
             mutation.removedNodes.forEach((node) => {
@@ -1377,4 +1375,6 @@
     document.readyState === 'loading'
         ? document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
         : bootstrap();
+
+    window.Plugins.FormValidate = FormValidate;
 })();
