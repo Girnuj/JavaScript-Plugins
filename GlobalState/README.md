@@ -16,12 +16,6 @@ Incluye el archivo en tu HTML:
 <script src="GlobalState/globalState.js"></script>
 ```
 
-O impórtalo como módulo:
-
-```js
-import GlobalState from './GlobalState/globalState.js';
-```
-
 ## API
 
 ### Estado global (clave/valor)
@@ -42,19 +36,19 @@ import GlobalState from './GlobalState/globalState.js';
 
 ```js
 // Guardar y leer estado global
-GlobalState.set('usuario', {nombre: 'Ana'});
-const user = GlobalState.get('usuario');
+window.Plugins.GlobalState.set('usuario', {nombre: 'Ana'});
+const user = window.Plugins.GlobalState.get('usuario');
 
 // Suscribirse a cambios de una clave
-globalState.subscribe('usuario', (nuevoValor) => {
+window.Plugins.GlobalState.subscribe('usuario', (nuevoValor) => {
   console.log('Usuario actualizado', nuevoValor);
 });
 
 // Publicar un evento custom
-GlobalState.publish('notificacion', {mensaje: 'Hola!'});
+window.Plugins.GlobalState.publish('notificacion', {mensaje: 'Hola!'});
 
 // Suscribirse a un evento custom
-GlobalState.on('notificacion', (payload) => {
+window.Plugins.GlobalState.on('notificacion', (payload) => {
   alert(payload.mensaje);
 });
 ```

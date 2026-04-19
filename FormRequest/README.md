@@ -85,7 +85,7 @@ Para produccion, usa `formRequest.min.js`. Si necesitas depurar, puedes usar `fo
 <script>
   const form = document.querySelector('form[data-form-request]');
 
-  const instance = window.FormRequest.init(form, {
+  const instance = window.Plugins.FormRequest.init(form, {
     sameOrigin: true,
     allowedMethods: ['GET', 'POST'],
     responseType: 'auto',
@@ -113,20 +113,20 @@ Para produccion, usa `formRequest.min.js`. Si necesitas depurar, puedes usar `fo
     }
   });
 
-  window.FormRequest.getInstance(form);
-  window.FormRequest.destroy(form);
-  window.FormRequest.initAll(document);
-  window.FormRequest.destroyAll(document);
+  window.Plugins.FormRequest.getInstance(form);
+  window.Plugins.FormRequest.destroy(form);
+  window.Plugins.FormRequest.initAll(document);
+  window.Plugins.FormRequest.destroyAll(document);
 </script>
 ```
 
 Metodos principales:
 
-- window.FormRequest.init(element, options): crea o reutiliza una instancia del formulario.
-- window.FormRequest.getInstance(element): devuelve la instancia actual o null.
-- window.FormRequest.destroy(element): destruye una instancia concreta.
-- window.FormRequest.initAll(root): inicializa todos los formularios compatibles dentro de un contenedor.
-- window.FormRequest.destroyAll(root): destruye todas las instancias dentro de un contenedor.
+- window.Plugins.FormRequest.init(element, options): crea o reutiliza una instancia del formulario.
+- window.Plugins.FormRequest.getInstance(element): devuelve la instancia actual o null.
+- window.Plugins.FormRequest.destroy(element): destruye una instancia concreta.
+- window.Plugins.FormRequest.initAll(root): inicializa todos los formularios compatibles dentro de un contenedor.
+- window.Plugins.FormRequest.destroyAll(root): destruye todas las instancias dentro de un contenedor.
 
 ## Eventos del plugin
 

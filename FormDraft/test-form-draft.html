@@ -148,7 +148,7 @@
       });
 
       clearButton.addEventListener('click', function () {
-        const instance = window.FormDraft.getInstance(form);
+        const instance = window.Plugins.FormDraft.getInstance(form);
         if (instance) {
           instance.clearDraft();
         }

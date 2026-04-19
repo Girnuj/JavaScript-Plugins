@@ -860,5 +860,6 @@
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
 
-    window.QuerySyncState = QuerySyncState;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.QuerySyncState = QuerySyncState;
 })();

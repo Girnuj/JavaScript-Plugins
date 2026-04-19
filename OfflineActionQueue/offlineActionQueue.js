@@ -1268,11 +1268,8 @@
         }
     }
 
-    /**
-     * API publica expuesta en `window`.
-     * @type {typeof OfflineActionQueue}
-     */
-    window.OfflineActionQueue = OfflineActionQueue;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.OfflineActionQueue = OfflineActionQueue;
 
     /**
      * Inicializa automaticamente instancias declarativas al cargar el DOM.

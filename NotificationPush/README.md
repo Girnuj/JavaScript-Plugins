@@ -164,7 +164,7 @@ Cuando envia por `fetch`, el plugin usa `cache: 'no-store'`.
 <script>
   const trigger = document.querySelector('[data-notification-push]');
 
-  const instance = window.NotificationPush.init(trigger, {
+  const instance = window.Plugins.NotificationPush.init(trigger, {
     defaultType: 'success',
     defaultDuration: 4200,
     showToast: true,
@@ -190,20 +190,20 @@ Cuando envia por `fetch`, el plugin usa `cache: 'no-store'`.
     }
   });
 
-  window.NotificationPush.getInstance(trigger);
-  window.NotificationPush.destroy(trigger);
-  window.NotificationPush.initAll(document);
-  window.NotificationPush.destroyAll(document);
+  window.Plugins.NotificationPush.getInstance(trigger);
+  window.Plugins.NotificationPush.destroy(trigger);
+  window.Plugins.NotificationPush.initAll(document);
+  window.Plugins.NotificationPush.destroyAll(document);
 </script>
 ```
 
 Metodos principales:
 
-- `window.NotificationPush.init(element, options)`: crea o reutiliza una instancia.
-- `window.NotificationPush.getInstance(element)`: devuelve la instancia actual o `null`.
-- `window.NotificationPush.destroy(element)`: destruye una instancia concreta.
-- `window.NotificationPush.initAll(root)`: inicializa todos los triggers compatibles.
-- `window.NotificationPush.destroyAll(root)`: destruye instancias dentro de un contenedor.
+- `window.Plugins.NotificationPush.init(element, options)`: crea o reutiliza una instancia.
+- `window.Plugins.NotificationPush.getInstance(element)`: devuelve la instancia actual o `null`.
+- `window.Plugins.NotificationPush.destroy(element)`: destruye una instancia concreta.
+- `window.Plugins.NotificationPush.initAll(root)`: inicializa todos los triggers compatibles.
+- `window.Plugins.NotificationPush.destroyAll(root)`: destruye instancias dentro de un contenedor.
 
 ## Eventos
 

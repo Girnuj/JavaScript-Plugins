@@ -164,7 +164,7 @@ When sending with `fetch`, plugin uses `cache: 'no-store'`.
 <script>
   const trigger = document.querySelector('[data-notification-push]');
 
-  const instance = window.NotificationPush.init(trigger, {
+  const instance = window.Plugins.NotificationPush.init(trigger, {
     defaultType: 'success',
     defaultDuration: 4200,
     showToast: true,
@@ -190,20 +190,20 @@ When sending with `fetch`, plugin uses `cache: 'no-store'`.
     }
   });
 
-  window.NotificationPush.getInstance(trigger);
-  window.NotificationPush.destroy(trigger);
-  window.NotificationPush.initAll(document);
-  window.NotificationPush.destroyAll(document);
+  window.Plugins.NotificationPush.getInstance(trigger);
+  window.Plugins.NotificationPush.destroy(trigger);
+  window.Plugins.NotificationPush.initAll(document);
+  window.Plugins.NotificationPush.destroyAll(document);
 </script>
 ```
 
 Main methods:
 
-- `window.NotificationPush.init(element, options)`: creates or reuses an instance.
-- `window.NotificationPush.getInstance(element)`: returns current instance or `null`.
-- `window.NotificationPush.destroy(element)`: destroys a specific instance.
-- `window.NotificationPush.initAll(root)`: initializes all compatible triggers.
-- `window.NotificationPush.destroyAll(root)`: destroys instances inside a container.
+- `window.Plugins.NotificationPush.init(element, options)`: creates or reuses an instance.
+- `window.Plugins.NotificationPush.getInstance(element)`: returns current instance or `null`.
+- `window.Plugins.NotificationPush.destroy(element)`: destroys a specific instance.
+- `window.Plugins.NotificationPush.initAll(root)`: initializes all compatible triggers.
+- `window.Plugins.NotificationPush.destroyAll(root)`: destroys instances inside a container.
 
 ## Events
 

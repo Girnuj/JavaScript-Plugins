@@ -88,12 +88,12 @@ Si prefieres inicializacion manual total para escenarios muy controlados:
 ```html
 <html data-pp-observe-global="false"></html>
 <script>
-	window.Modal.initAll(document);
-	window.FormValidate.initAll(document);
-	window.ConfirmAction.initAll(document);
-	window.FormRequest.initAll(document);
-	window.RequestState.initAll(document);
-	window.NotificationPush.initAll(document);
+	window.Plugins.Modal.initAll(document);
+	window.Plugins.FormValidate.initAll(document);
+	window.Plugins.ConfirmAction.initAll(document);
+	window.Plugins.FormRequest.initAll(document);
+	window.Plugins.RequestState.initAll(document);
+	window.Plugins.NotificationPush.initAll(document);
 </script>
 ```
 

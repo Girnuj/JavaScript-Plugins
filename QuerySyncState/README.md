@@ -55,11 +55,11 @@ Con eso:
 
 ## API publica
 
-- `window.QuerySyncState.init(element, options)`
-- `window.QuerySyncState.getInstance(element)`
-- `window.QuerySyncState.destroy(element)`
-- `window.QuerySyncState.initAll(root)`
-- `window.QuerySyncState.destroyAll(root)`
+- `window.Plugins.QuerySyncState.init(element, options)`
+- `window.Plugins.QuerySyncState.getInstance(element)`
+- `window.Plugins.QuerySyncState.destroy(element)`
+- `window.Plugins.QuerySyncState.initAll(root)`
+- `window.Plugins.QuerySyncState.destroyAll(root)`
 
 Metodos de instancia:
 

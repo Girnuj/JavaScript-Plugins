@@ -806,7 +806,8 @@
         }
     }
 
-    window.ConfirmAction = ConfirmAction;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.ConfirmAction = ConfirmAction;
 
     /**
      * Inicializa automaticamente instancias en el documento actual.

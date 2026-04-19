@@ -108,9 +108,10 @@
 	}
 
 	/**
-	 * API publica del renderizador expuesta a `window`.
+	 * API publica del renderizador expuesta a `window.Plugins`.
 	 * @type {typeof TemplateRenderizer}
 	 */
-	window.templateRenderizer = TemplateRenderizer;
+	window.Plugins = window.Plugins || {};
+	window.Plugins.TemplateRenderizer = TemplateRenderizer;
 
 })();

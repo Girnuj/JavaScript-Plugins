@@ -74,9 +74,9 @@ Si necesitas inicializar manualmente un bloque concreto:
 
 ```html
 <script>
-  VideoUrlPreview.init(document.querySelector('#miInput'));
+  window.Plugins.VideoUrlPreview.init(document.querySelector('#miInput'));
   // o sobre un contenedor completo
-  VideoUrlPreview.initAll(document.querySelector('#miFormulario'));
+  window.Plugins.VideoUrlPreview.initAll(document.querySelector('#miFormulario'));
 </script>
 ```
 
@@ -85,20 +85,20 @@ Si necesitas inicializar manualmente un bloque concreto:
 ```html
 <script>
   const input = document.querySelector('#miInput')
-      , instance = VideoUrlPreview.init(input);
+      , instance = window.Plugins.VideoUrlPreview.init(input);
 
-  VideoUrlPreview.getInstance(input);
-  VideoUrlPreview.destroy(input, { clearPreview: true });
-  VideoUrlPreview.destroyAll(document.querySelector('#miFormulario'));
+  window.Plugins.VideoUrlPreview.getInstance(input);
+  window.Plugins.VideoUrlPreview.destroy(input, { clearPreview: true });
+  window.Plugins.VideoUrlPreview.destroyAll(document.querySelector('#miFormulario'));
 
   instance.destroy();
 </script>
 ```
 
-- `VideoUrlPreview.init(element, options)`: crea o reutiliza una instancia.
-- `VideoUrlPreview.getInstance(element)`: devuelve la instancia actual o `null`.
-- `VideoUrlPreview.destroy(element, options)`: desmonta una instancia concreta.
-- `VideoUrlPreview.destroyAll(root, options)`: desmonta todas las instancias dentro de un contenedor.
+- `window.Plugins.VideoUrlPreview.init(element, options)`: crea o reutiliza una instancia.
+- `window.Plugins.VideoUrlPreview.getInstance(element)`: devuelve la instancia actual o `null`.
+- `window.Plugins.VideoUrlPreview.destroy(element, options)`: desmonta una instancia concreta.
+- `window.Plugins.VideoUrlPreview.destroyAll(root, options)`: desmonta todas las instancias dentro de un contenedor.
 - `instance.destroy(options)`: elimina listeners de la instancia actual.
 - `clearPreview: true`: opcion para limpiar el `src` del `<iframe>` al destruir.
 

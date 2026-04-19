@@ -189,7 +189,7 @@ Ejemplo:
 <script>
   const trigger = document.querySelector('[data-request-state]');
 
-  const instance = window.RequestState.init(trigger, {
+  const instance = window.Plugins.RequestState.init(trigger, {
     delayMs: 500,
     autoResetMs: 1800,
     retryCount: 1,
@@ -229,20 +229,20 @@ Ejemplo:
     }
   });
 
-  window.RequestState.getInstance(trigger);
-  window.RequestState.destroy(trigger);
-  window.RequestState.initAll(document);
-  window.RequestState.destroyAll(document);
+  window.Plugins.RequestState.getInstance(trigger);
+  window.Plugins.RequestState.destroy(trigger);
+  window.Plugins.RequestState.initAll(document);
+  window.Plugins.RequestState.destroyAll(document);
 </script>
 ```
 
 Metodos principales:
 
-- `window.RequestState.init(element, options)`: crea o reutiliza instancia.
-- `window.RequestState.getInstance(element)`: devuelve la instancia o `null`.
-- `window.RequestState.destroy(element)`: destruye una instancia concreta.
-- `window.RequestState.initAll(root)`: inicializa todos los triggers compatibles.
-- `window.RequestState.destroyAll(root)`: destruye instancias dentro de un contenedor.
+- `window.Plugins.RequestState.init(element, options)`: crea o reutiliza instancia.
+- `window.Plugins.RequestState.getInstance(element)`: devuelve la instancia o `null`.
+- `window.Plugins.RequestState.destroy(element)`: destruye una instancia concreta.
+- `window.Plugins.RequestState.initAll(root)`: inicializa todos los triggers compatibles.
+- `window.Plugins.RequestState.destroyAll(root)`: destruye instancias dentro de un contenedor.
 
 ## Eventos
 

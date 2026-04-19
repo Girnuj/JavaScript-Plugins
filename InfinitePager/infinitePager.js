@@ -918,5 +918,6 @@
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
 
-    window.InfinitePager = InfinitePager;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.InfinitePager = InfinitePager;
 })();

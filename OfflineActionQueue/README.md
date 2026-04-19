@@ -103,16 +103,16 @@ Ejemplo con perfil:
 
 ## API publica
 
-- `window.OfflineActionQueue.init(element, options)`
-- `window.OfflineActionQueue.getInstance(element)`
-- `window.OfflineActionQueue.destroy(element)`
-- `window.OfflineActionQueue.initAll(root)`
-- `window.OfflineActionQueue.destroyAll(root)`
-- `window.OfflineActionQueue.registerProfile(name, options)`
-- `window.OfflineActionQueue.getProfile(name)`
-- `window.OfflineActionQueue.hasProfile(name)`
-- `window.OfflineActionQueue.unregisterProfile(name)`
-- `window.OfflineActionQueue.listProfiles()`
+- `window.Plugins.OfflineActionQueue.init(element, options)`
+- `window.Plugins.OfflineActionQueue.getInstance(element)`
+- `window.Plugins.OfflineActionQueue.destroy(element)`
+- `window.Plugins.OfflineActionQueue.initAll(root)`
+- `window.Plugins.OfflineActionQueue.destroyAll(root)`
+- `window.Plugins.OfflineActionQueue.registerProfile(name, options)`
+- `window.Plugins.OfflineActionQueue.getProfile(name)`
+- `window.Plugins.OfflineActionQueue.hasProfile(name)`
+- `window.Plugins.OfflineActionQueue.unregisterProfile(name)`
+- `window.Plugins.OfflineActionQueue.listProfiles()`
 
 Metodos de instancia:
 

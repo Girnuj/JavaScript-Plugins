@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Test FormRequest + GlobalState</title>
   <script src="../GlobalState/globalState.js"></script>
-  <script src="formRequest.js"></script>
+  <script src="../FormRequest/formRequest.js"></script>
   <style>
     body { font-family: sans-serif; margin: 2em; }
     .log { background: #f4f4f4; border: 1px solid #ccc; padding: 1em; margin-top: 1em; max-width: 600px; }
@@ -33,38 +33,38 @@
 
   <script>
     // Simula respuesta exitosa de backend (solo para demo local)
-    FormRequest.prototype.runRequest = async function(request) {
+      window.Plugins.FormRequest.prototype.runRequest = async function(request) {
       await new Promise(r => setTimeout(r, 600));
       return new Response(JSON.stringify({
         ok: true,
-        nombre: this.subject.nombre.value
+        nombre: this.subject.querySelector('[name=nombre]').value
       }), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
       });
     };
     // Hook de integración usando evento estándar del plugin
-    document.addEventListener('success.plugin.formRequest', function(e) {
+    document.getElementById('demoForm').addEventListener('success.plugin.formRequest', function(e) {
       if (e.detail && e.detail.data && e.detail.data.nombre) {
-        GlobalState.set('nombre', e.detail.data.nombre);
+        window.Plugins.GlobalState.set('nombre', e.detail.data.nombre);
         log(`<b>Respuesta exitosa:</b> nombre = <code>${e.detail.data.nombre}</code> (guardado en GlobalState)`);
       }
     });
 
     // Log visual
-    function log(msg) {
+    function log(msg) { 
       const el = document.getElementById('log');
       el.innerHTML += `<div>${msg}</div>`;
       el.scrollTop = el.scrollHeight;
     }
 
     // Escucha cambios en GlobalState
-    GlobalState.subscribe('nombre', (nuevoValor) => {
+    window.Plugins.GlobalState.subscribe('nombre', (nuevoValor) => {
       log(`<b>GlobalState:</b> nombre actualizado a <code>${nuevoValor}</code>`);
     });
 
     document.getElementById('leerGlobal').onclick = () => {
-      const nombre = GlobalState.get('nombre');
+      const nombre = window.Plugins.GlobalState.get('nombre');
       log(`<i>Leído de GlobalState:</i> <code>${nombre}</code>`);
     };
   </script>

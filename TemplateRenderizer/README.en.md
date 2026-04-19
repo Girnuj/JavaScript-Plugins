@@ -47,7 +47,7 @@ For production usage, if you do not need to read the source code, you can includ
 
 <script src="./templateRenderizer.js"></script>
 <script>
-  const renderer = new templateRenderizer({
+  const renderer = new window.Plugins.TemplateRenderizer({
     templateSelector: '#cardTemplate'
   });
 
@@ -77,7 +77,7 @@ Configuration is done through JavaScript using `templateSelector` and instance o
 
 ```html
 <script>
-  const renderer = new templateRenderizer({
+  const renderer = new window.Plugins.TemplateRenderizer({
     templateSelector: '#myTemplate'
   });
 
@@ -87,7 +87,7 @@ Configuration is done through JavaScript using `templateSelector` and instance o
 </script>
 ```
 
-- `new templateRenderizer(options)`: creates a renderer instance.
+- `new window.Plugins.TemplateRenderizer(options)`: creates a renderer instance.
 - `options.templateSelector`: CSS selector for the source template.
 - `options.propertiesNames` (optional): manual placeholder list.
 - `renderer.render(data)`: returns final HTML with all replacements.

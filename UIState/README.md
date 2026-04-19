@@ -85,7 +85,7 @@ En el trigger:
 <script>
   const host = document.querySelector('#cardA');
 
-  const instance = window.UIState.init(host, {
+  const instance = window.Plugins.UIState.init(host, {
     baseState: 'default',
     classPrefix: 'is-state-',
     disableOnStates: ['loading', 'disabled'],
@@ -107,22 +107,22 @@ En el trigger:
   instance.setState('error', { message: 'No disponible' });
   instance.restore();
 
-  window.UIState.getInstance(host);
-  window.UIState.destroy(host);
-  window.UIState.initAll(document);
-  window.UIState.destroyAll(document);
+  window.Plugins.UIState.getInstance(host);
+  window.Plugins.UIState.destroy(host);
+  window.Plugins.UIState.initAll(document);
+  window.Plugins.UIState.destroyAll(document);
 </script>
 ```
 
 Metodos principales:
 
-- window.UIState.init(element, options): crea o reutiliza una instancia del host.
+- window.Plugins.UIState.init(element, options): crea o reutiliza una instancia del host.
 - instance.setState(state, payload): aplica un estado visual y payload opcional.
 - instance.restore(): restaura contenido y estado base.
-- window.UIState.getInstance(element): devuelve la instancia actual o null.
-- window.UIState.destroy(element): destruye una instancia concreta.
-- window.UIState.initAll(root): inicializa todos los hosts compatibles en un contenedor.
-- window.UIState.destroyAll(root): destruye todas las instancias en un contenedor.
+- window.Plugins.UIState.getInstance(element): devuelve la instancia actual o null.
+- window.Plugins.UIState.destroy(element): destruye una instancia concreta.
+- window.Plugins.UIState.initAll(root): inicializa todos los hosts compatibles en un contenedor.
+- window.Plugins.UIState.destroyAll(root): destruye todas las instancias en un contenedor.
 
 ### Multiples clases por estado
 
@@ -142,7 +142,7 @@ Tambien puedes hacerlo por inicializacion JS con `stateClassMap`:
 
 ```html
 <script>
-  window.UIState.init(document.querySelector('#cardA'), {
+  window.Plugins.UIState.init(document.querySelector('#cardA'), {
     stateClassMap: {
       loading: 'is-state-loading u-glow u-fade',
       error: 'is-state-error u-outline-error u-border-strong',

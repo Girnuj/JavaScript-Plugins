@@ -78,7 +78,7 @@ Note: `FormDraft` clears persisted draft data (storage). If you also want to cle
 <script>
   const form = document.querySelector('form[data-form-draft]');
 
-  const instance = window.FormDraft.init(form, {
+  const instance = window.Plugins.FormDraft.init(form, {
     storage: 'local',
     key: 'checkout-v1',
     debounceMs: 300,
@@ -90,10 +90,10 @@ Note: `FormDraft` clears persisted draft data (storage). If you also want to cle
   instance.restoreNow();
   instance.clearDraft();
 
-  window.FormDraft.getInstance(form);
-  window.FormDraft.destroy(form);
-  window.FormDraft.initAll(document);
-  window.FormDraft.destroyAll(document);
+  window.Plugins.FormDraft.getInstance(form);
+  window.Plugins.FormDraft.destroy(form);
+  window.Plugins.FormDraft.initAll(document);
+  window.Plugins.FormDraft.destroyAll(document);
 </script>
 ```
 

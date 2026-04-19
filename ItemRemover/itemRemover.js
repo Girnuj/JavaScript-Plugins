@@ -269,5 +269,6 @@
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 		: startAutoInit();
 
-	window.ItemRemover = ItemRemover;
+	window.Plugins = window.Plugins || {};
+	window.Plugins.ItemRemover = ItemRemover;
 })();

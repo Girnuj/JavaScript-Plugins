@@ -116,5 +116,6 @@
         }
     }
 
-    window.GlobalState = GlobalState;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.GlobalState = GlobalState;
 })();

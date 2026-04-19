@@ -32,7 +32,7 @@
     };
 
     // Suscribirse a cambios de la clave 'nombre'
-    GlobalState.subscribe('nombre', (nuevoValor) => {
+    window.Plugins.GlobalState.subscribe('nombre', (nuevoValor) => {
       log(`<b>Suscripción:</b> nombre actualizado a <code>${nuevoValor}</code>`);
     });
 
@@ -42,23 +42,23 @@
     });
 
     // Suscribirse a evento custom 'notificacion'
-    GlobalState.on('notificacion', (payload) => {
+    window.Plugins.GlobalState.on('notificacion', (payload) => {
       log(`<b>Evento pub/sub:</b> notificacion → <code>${payload.mensaje}</code>`);
     });
 
     document.getElementById('guardarBtn').onclick = () => {
       const nombre = document.getElementById('nombreInput').value;
-      GlobalState.set('nombre', nombre);
+      window.Plugins.GlobalState.set('nombre', nombre);
       log(`<i>Guardado 'nombre' = <code>${nombre}</code></i>`);
     };
 
     document.getElementById('leerBtn').onclick = () => {
-      const nombre = GlobalState.get('nombre');
+      const nombre = window.Plugins.GlobalState.get('nombre');
       log(`<i>Leído 'nombre' = <code>${nombre}</code></i>`);
     };
 
     document.getElementById('publicarEventoBtn').onclick = () => {
-      GlobalState.publish('notificacion', { mensaje: '¡Hola desde GlobalState!' });
+      window.Plugins.GlobalState.publish('notificacion', { mensaje: '¡Hola desde GlobalState!' });
     };
   </script>
 </body>

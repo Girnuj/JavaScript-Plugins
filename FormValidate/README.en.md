@@ -201,7 +201,7 @@ You can render all validation errors in one block:
 <script>
   var form = document.querySelector('form[data-form-validate]');
 
-  var instance = window.FormValidate.init(form, {
+  var instance = window.Plugins.FormValidate.init(form, {
     focusFirstInvalid: true,
     validateOnInput: true,
     validateOnBlur: true,
@@ -218,10 +218,10 @@ You can render all validation errors in one block:
 
   instance.validateForm({ emitEvents: true, focusFirst: true });
 
-  window.FormValidate.getInstance(form);
-  window.FormValidate.destroy(form);
-  window.FormValidate.initAll(document);
-  window.FormValidate.destroyAll(document);
+  window.Plugins.FormValidate.getInstance(form);
+  window.Plugins.FormValidate.destroy(form);
+  window.Plugins.FormValidate.initAll(document);
+  window.Plugins.FormValidate.destroyAll(document);
 </script>
 ```
 
@@ -354,17 +354,17 @@ You can render all validation errors in one block:
 
 Main methods:
 
-- `window.FormValidate.init(element, options)`: creates or reuses an instance.
+- `window.Plugins.FormValidate.init(element, options)`: creates or reuses an instance.
 - `instance.validateForm(config)`: runs full validation and returns `true/false`.
-- `window.FormValidate.getInstance(element)`: returns current instance or `null`.
-- `window.FormValidate.destroy(element)`: destroys a specific instance.
-- `window.FormValidate.initAll(root)`: initializes compatible forms in a container.
-- `window.FormValidate.destroyAll(root)`: destroys instances in a container.
-- `window.FormValidate.registerCustomRule(name, validator)`: registers a global custom rule.
-- `window.FormValidate.getCustomRule(name)`: gets a global custom rule.
-- `window.FormValidate.hasCustomRule(name)`: checks if a custom rule exists.
-- `window.FormValidate.unregisterCustomRule(name)`: removes a global custom rule.
-- `window.FormValidate.listCustomRules()`: lists registered custom rule names.
+- `window.Plugins.FormValidate.getInstance(element)`: returns current instance or `null`.
+- `window.Plugins.FormValidate.destroy(element)`: destroys a specific instance.
+- `window.Plugins.FormValidate.initAll(root)`: initializes compatible forms in a container.
+- `window.Plugins.FormValidate.destroyAll(root)`: destroys instances in a container.
+- `window.Plugins.FormValidate.registerCustomRule(name, validator)`: registers a global custom rule.
+- `window.Plugins.FormValidate.getCustomRule(name)`: gets a global custom rule.
+- `window.Plugins.FormValidate.hasCustomRule(name)`: checks if a custom rule exists.
+- `window.Plugins.FormValidate.unregisterCustomRule(name)`: removes a global custom rule.
+- `window.Plugins.FormValidate.listCustomRules()`: lists registered custom rule names.
 
 ### Custom rules (API)
 
@@ -380,7 +380,7 @@ You can register global custom rules and reference them in fields via `data-fv-c
 />
 
 <script>
-  window.FormValidate.registerCustomRule('username-safe', function (ctx) {
+  window.Plugins.FormValidate.registerCustomRule('username-safe', function (ctx) {
     var value = String(ctx.value || '').trim();
     if (!value) return true;
     return /^[a-zA-Z0-9._]+$/.test(value);

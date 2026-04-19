@@ -176,7 +176,7 @@ Ejemplo clásico:
 <script>
   var form = document.querySelector('form[data-form-validate]');
 
-  var instance = window.FormValidate.init(form, {
+  var instance = window.Plugins.FormValidate.init(form, {
     focusFirstInvalid: true,
     validateOnInput: true,
     validateOnBlur: true,
@@ -193,10 +193,10 @@ Ejemplo clásico:
 
   instance.validateForm({ emitEvents: true, focusFirst: true });
 
-  window.FormValidate.getInstance(form);
-  window.FormValidate.destroy(form);
-  window.FormValidate.initAll(document);
-  window.FormValidate.destroyAll(document);
+  window.Plugins.FormValidate.getInstance(form);
+  window.Plugins.FormValidate.destroy(form);
+  window.Plugins.FormValidate.initAll(document);
+  window.Plugins.FormValidate.destroyAll(document);
 </script>
 ```
 
@@ -301,17 +301,17 @@ Ejemplo clásico:
 
 Metodos principales:
 
-- `window.FormValidate.init(element, options)`: crea o reutiliza una instancia.
+- `window.Plugins.FormValidate.init(element, options)`: crea o reutiliza una instancia.
 - `instance.validateForm(config)`: ejecuta validacion completa y devuelve `true/false`.
-- `window.FormValidate.getInstance(element)`: devuelve la instancia actual o `null`.
-- `window.FormValidate.destroy(element)`: destruye una instancia concreta.
-- `window.FormValidate.initAll(root)`: inicializa formularios compatibles en un contenedor.
-- `window.FormValidate.destroyAll(root)`: destruye instancias en un contenedor.
-- `window.FormValidate.registerCustomRule(name, validator)`: registra una regla custom global.
-- `window.FormValidate.getCustomRule(name)`: obtiene una regla custom global.
-- `window.FormValidate.hasCustomRule(name)`: valida si una regla custom existe.
-- `window.FormValidate.unregisterCustomRule(name)`: elimina una regla custom global.
-- `window.FormValidate.listCustomRules()`: lista nombres de reglas custom registradas.
+- `window.Plugins.FormValidate.getInstance(element)`: devuelve la instancia actual o `null`.
+- `window.Plugins.FormValidate.destroy(element)`: destruye una instancia concreta.
+- `window.Plugins.FormValidate.initAll(root)`: inicializa formularios compatibles en un contenedor.
+- `window.Plugins.FormValidate.destroyAll(root)`: destruye instancias en un contenedor.
+- `window.Plugins.FormValidate.registerCustomRule(name, validator)`: registra una regla custom global.
+- `window.Plugins.FormValidate.getCustomRule(name)`: obtiene una regla custom global.
+- `window.Plugins.FormValidate.hasCustomRule(name)`: valida si una regla custom existe.
+- `window.Plugins.FormValidate.unregisterCustomRule(name)`: elimina una regla custom global.
+- `window.Plugins.FormValidate.listCustomRules()`: lista nombres de reglas custom registradas.
 
 ### Reglas custom (API)
 
@@ -327,7 +327,7 @@ Puedes registrar reglas custom globales y usarlas en cualquier campo con `data-f
 />
 
 <script>
-  window.FormValidate.registerCustomRule('username-safe', function (ctx) {
+  window.Plugins.FormValidate.registerCustomRule('username-safe', function (ctx) {
     var value = String(ctx.value || '').trim();
     if (!value) return true;
     return /^[a-zA-Z0-9._]+$/.test(value);

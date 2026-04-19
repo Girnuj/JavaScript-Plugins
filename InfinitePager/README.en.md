@@ -78,7 +78,7 @@ Compatibility: `data-ip-*` is still supported temporarily for backward compatibi
 <script>
   const trigger = document.querySelector('[data-role="infinite-pager"]');
 
-  const instance = window.InfinitePager.init(trigger, {
+  const instance = window.Plugins.InfinitePager.init(trigger, {
     mode: 'button',
     endpoint: '/api/products',
     targetSelector: '#productsList'
@@ -87,10 +87,10 @@ Compatibility: `data-ip-*` is still supported temporarily for backward compatibi
   instance.loadNext();
   instance.reset({ clearTarget: false });
 
-  window.InfinitePager.getInstance(trigger);
-  window.InfinitePager.destroy(trigger);
-  window.InfinitePager.initAll(document);
-  window.InfinitePager.destroyAll(document);
+  window.Plugins.InfinitePager.getInstance(trigger);
+  window.Plugins.InfinitePager.destroy(trigger);
+  window.Plugins.InfinitePager.initAll(document);
+  window.Plugins.InfinitePager.destroyAll(document);
 </script>
 ```
 

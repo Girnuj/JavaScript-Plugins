@@ -322,5 +322,6 @@
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 		: startAutoInit();
 
-	window.ItemMover = ItemMover;
+	window.Plugins = window.Plugins || {};
+	window.Plugins.ItemMover = ItemMover;
 })();

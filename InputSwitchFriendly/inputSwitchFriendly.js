@@ -293,5 +293,6 @@
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 		: startAutoInit();
 
-	window.InputSwitchFriendly = InputSwitchFriendly;
+	window.Plugins = window.Plugins || {};
+	window.Plugins.InputSwitchFriendly = InputSwitchFriendly;
 })();

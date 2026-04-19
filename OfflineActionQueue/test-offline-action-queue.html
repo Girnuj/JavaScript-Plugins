@@ -129,7 +129,7 @@
             }
 
             function updateSnapshot() {
-                var instance = window.OfflineActionQueue.getInstance(taskFormEl);
+                var instance = window.Plugins.OfflineActionQueue.getInstance(taskFormEl);
                 if (!instance) return;
                 var snapshot = instance.getQueueSnapshot();
                 queueSizeEl.textContent = String(snapshot.length);
@@ -179,7 +179,7 @@
             });
 
             forceFlushEl.addEventListener('click', function () {
-                var instance = window.OfflineActionQueue.getInstance(taskFormEl);
+                var instance = window.Plugins.OfflineActionQueue.getInstance(taskFormEl);
                 if (!instance) return;
                 instance.flush().then(function (count) {
                     log('manual flush -> enviados=' + count);
@@ -188,7 +188,7 @@
             });
 
             clearQueueEl.addEventListener('click', function () {
-                var instance = window.OfflineActionQueue.getInstance(taskFormEl);
+                var instance = window.Plugins.OfflineActionQueue.getInstance(taskFormEl);
                 if (!instance) return;
                 instance.clearQueue();
                 log('cola limpiada manualmente');
@@ -198,7 +198,7 @@
             simulateFailEl.addEventListener('change', function () {
                 log('simulacion de red: ' + (simulateFailEl.checked ? 'falla activa' : 'red estable'));
                 if (!simulateFailEl.checked) {
-                    var instance = window.OfflineActionQueue.getInstance(taskFormEl);
+                    var instance = window.Plugins.OfflineActionQueue.getInstance(taskFormEl);
                     instance && instance.flush();
                 }
             });

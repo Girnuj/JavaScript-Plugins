@@ -381,5 +381,6 @@
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 		: startAutoInit();
 
-	window.VideoUrlPreview = VideoUrlPreview;
+	window.Plugins = window.Plugins || {};
+	window.Plugins.VideoUrlPreview = VideoUrlPreview;
 })();

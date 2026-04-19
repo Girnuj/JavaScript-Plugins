@@ -213,7 +213,7 @@
           , btnDesignerRestore = document.getElementById('btnDesignerRestore')
           // Ejemplo: clases por estado definidas desde data-* en el host, sin mapear en JS.
           // este es para el Panel de disenador, que no tiene data-attributes y se controla 100% por API.
-          , uiStateInstance = window.UIState.init(host);
+          , uiStateInstance = window.Plugins.UIState.init(host);
 
       function addLog(text) {
         const li = document.createElement('li');

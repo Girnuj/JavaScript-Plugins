@@ -339,5 +339,6 @@
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 	 	: startAutoInit();
 	
-	window.ImgUploadPreview = ImgUploadPreview;
+	window.Plugins = window.Plugins || {};
+	window.Plugins.ImgUploadPreview = ImgUploadPreview;
 })();

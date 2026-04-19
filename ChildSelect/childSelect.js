@@ -690,5 +690,6 @@
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 		: startAutoInit();
 
-	window.ChildSelect = ChildSelect;
+	window.Plugins = window.Plugins || {};
+	window.Plugins.ChildSelect = ChildSelect;
 })();

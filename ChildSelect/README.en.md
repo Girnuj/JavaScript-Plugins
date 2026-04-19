@@ -114,8 +114,8 @@ In both cases, the plugin uses `fetch` to load data and initializes automaticall
 
 ```html
 <script>
-  ChildSelect.init(document.querySelector('#countrySelect'));
-  ChildSelect.initAll(document.querySelector('#formFilters'));
+  window.Plugins.ChildSelect.init(document.querySelector('#countrySelect'));
+  window.Plugins.ChildSelect.initAll(document.querySelector('#formFilters'));
 </script>
 ```
 
@@ -124,23 +124,23 @@ In both cases, the plugin uses `fetch` to load data and initializes automaticall
 ```html
 <script>
   const parentSelect = document.querySelector('#countrySelect')
-      , instance = ChildSelect.init(parentSelect, {
+      , instance = window.Plugins.ChildSelect.init(parentSelect, {
           childrenUrl: '/api/cities',
           childSelectSelector: '#citySelect'
         });
 
-  ChildSelect.getInstance(parentSelect);
-  ChildSelect.destroy(parentSelect);
-  ChildSelect.destroyAll(document.querySelector('#formFilters'));
+  window.Plugins.ChildSelect.getInstance(parentSelect);
+  window.Plugins.ChildSelect.destroy(parentSelect);
+  window.Plugins.ChildSelect.destroyAll(document.querySelector('#formFilters'));
 
   instance.destroy();
 </script>
 ```
 
-- `ChildSelect.init(element, options)`: creates or reuses an instance.
-- `ChildSelect.getInstance(element)`: returns current instance or `null`.
-- `ChildSelect.destroy(element)`: tears down a specific instance.
-- `ChildSelect.destroyAll(root)`: tears down all instances inside a container.
+- `window.Plugins.ChildSelect.init(element, options)`: creates or reuses an instance.
+- `window.Plugins.ChildSelect.getInstance(element)`: returns current instance or `null`.
+- `window.Plugins.ChildSelect.destroy(element)`: tears down a specific instance.
+- `window.Plugins.ChildSelect.destroyAll(root)`: tears down all instances inside a container.
 - `instance.destroy()`: removes listeners for the current instance.
 
 ## Common Errors

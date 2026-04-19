@@ -689,7 +689,8 @@
         }
     }
 
-    window.NotificationPush = NotificationPush;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.NotificationPush = NotificationPush;
 
     /**
      * Inicializa automaticamente todas las instancias presentes en el documento.
@@ -700,11 +701,9 @@
         NotificationPush.initAll(document);
     };
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bootstrap, { once: true });
-    } else {
-        bootstrap();
-    }
+    document.readyState === 'loading'
+        ? document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
+        : bootstrap();
 
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -720,23 +719,23 @@
         });
     });
 
-        const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
-        if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
-            const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim();
-            const observeRootElement = document.querySelector('[data-pp-observe-root-notification-push]');
-            let observeRoot = observeRootElement || document.body || document.documentElement;
+    const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
+    if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
+        const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim();
+        const observeRootElement = document.querySelector('[data-pp-observe-root-notification-push]');
+        let observeRoot = observeRootElement || document.body || document.documentElement;
 
-            if (observeRootSelector && !observeRootElement) {
-                try {
-                    observeRoot = document.querySelector(observeRootSelector) || observeRoot;
-                } catch (_error) {
-                    observeRoot = document.body || document.documentElement;
-                }
+        if (observeRootSelector && !observeRootElement) {
+            try {
+                observeRoot = document.querySelector(observeRootSelector) || observeRoot;
+            } catch (_error) {
+                observeRoot = document.body || document.documentElement;
             }
-
-            observer.observe(observeRoot, {
-                childList: true,
-                subtree: true
-            });
         }
+
+        observer.observe(observeRoot, {
+            childList: true,
+            subtree: true
+        });
+    }
 })();

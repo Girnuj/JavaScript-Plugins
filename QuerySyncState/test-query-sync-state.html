@@ -170,7 +170,7 @@
       // Reinicia cada control al valor default configurado y sincroniza URL.
       resetButton.addEventListener('click', function () {
         document.querySelectorAll('[data-role="query-sync-state"]').forEach((element) => {
-          const instance = window.QuerySyncState.getInstance(element);
+          const instance = window.Plugins.QuerySyncState.getInstance(element);
           if (instance) {
             instance.reset({ syncToUrl: true });
           }

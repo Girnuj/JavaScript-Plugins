@@ -262,19 +262,19 @@
     });
 
     document.getElementById('btnOpenApi').addEventListener('click', function () {
-      const instance = window.Modal.init(modalElement);
+      const instance = window.Plugins.Modal.init(modalElement);
       instance.show(this);
     });
 
     document.getElementById('btnToggleApi').addEventListener('click', function () {
-      const instance = window.Modal.init(modalElement);
+      const instance = window.Plugins.Modal.init(modalElement);
       instance.toggle(this);
     });
 
     document.getElementById('btnSave').addEventListener('click', function () {
       const value = document.getElementById('txtName').value.trim();
       addLog(value === '' ? 'Guardado sin nombre' : 'Guardado: ' + value);
-      const instance = window.Modal.getInstance(modalElement);
+      const instance = window.Plugins.Modal.getInstance(modalElement);
       if (instance) {
         instance.hide(null, this);
       }

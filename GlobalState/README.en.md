@@ -16,12 +16,6 @@ Include the file in your HTML:
 <script src="GlobalState/globalState.js"></script>
 ```
 
-Or import it as a module:
-
-```js
-import GlobalState from './GlobalState/globalState.js';
-```
-
 ## API
 
 ### Global state (key/value)
@@ -42,19 +36,19 @@ import GlobalState from './GlobalState/globalState.js';
 
 ```js
 // Store and read global state
-GlobalState.set('user', {name: 'Ana'});
-const user = GlobalState.get('user');
+window.Plugins.GlobalState.set('user', {name: 'Ana'});
+const user = window.Plugins.GlobalState.get('user');
 
 // Subscribe to changes of a key
-GlobalState.subscribe('user', (newValue) => {
+window.Plugins.GlobalState.subscribe('user', (newValue) => {
   console.log('User updated', newValue);
 });
 
 // Publish a custom event
-GlobalState.publish('notification', {message: 'Hello!'});
+window.Plugins.GlobalState.publish('notification', {message: 'Hello!'});
 
 // Subscribe to a custom event
-GlobalState.on('notification', (payload) => {
+window.Plugins.GlobalState.on('notification', (payload) => {
   alert(payload.message);
 });
 ```

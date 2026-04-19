@@ -106,7 +106,7 @@ For production, use `formRequest.min.js`. If you need debugging, you can use `fo
 <script>
   const form = document.querySelector('form[data-form-request]');
 
-  const instance = window.FormRequest.init(form, {
+  const instance = window.Plugins.FormRequest.init(form, {
     sameOrigin: true,
     allowedMethods: ['GET', 'POST'],
     responseType: 'auto',
@@ -134,20 +134,20 @@ For production, use `formRequest.min.js`. If you need debugging, you can use `fo
     }
   });
 
-  window.FormRequest.getInstance(form);
-  window.FormRequest.destroy(form);
-  window.FormRequest.initAll(document);
-  window.FormRequest.destroyAll(document);
+  window.Plugins.FormRequest.getInstance(form);
+  window.Plugins.FormRequest.destroy(form);
+  window.Plugins.FormRequest.initAll(document);
+  window.Plugins.FormRequest.destroyAll(document);
 </script>
 ```
 
 Main methods:
 
-- window.FormRequest.init(element, options): creates or reuses a form instance.
-- window.FormRequest.getInstance(element): returns current instance or null.
-- window.FormRequest.destroy(element): destroys a specific instance.
-- window.FormRequest.initAll(root): initializes all compatible forms inside a container.
-- window.FormRequest.destroyAll(root): destroys all instances inside a container.
+- window.Plugins.FormRequest.init(element, options): creates or reuses a form instance.
+- window.Plugins.FormRequest.getInstance(element): returns current instance or null.
+- window.Plugins.FormRequest.destroy(element): destroys a specific instance.
+- window.Plugins.FormRequest.initAll(root): initializes all compatible forms inside a container.
+- window.Plugins.FormRequest.destroyAll(root): destroys all instances inside a container.
 
 ## Plugin Events
 

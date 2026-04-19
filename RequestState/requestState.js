@@ -1013,17 +1013,16 @@
         }
     }
 
-    window.RequestState = RequestState;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.RequestState = RequestState;
 
     const bootstrap = () => {
         RequestState.initAll(document);
     };
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', bootstrap, { once: true });
-    } else {
-        bootstrap();
-    }
+    document.readyState === 'loading'
+        ? document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
+        : bootstrap();
 
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
@@ -1039,23 +1038,23 @@
         });
     });
 
-        const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
-        if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
-            const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim();
-            const observeRootElement = document.querySelector('[data-pp-observe-root-request-state]');
-            let observeRoot = observeRootElement || document.body || document.documentElement;
+    const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
+    if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
+        const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim();
+        const observeRootElement = document.querySelector('[data-pp-observe-root-request-state]');
+        let observeRoot = observeRootElement || document.body || document.documentElement;
 
-            if (observeRootSelector && !observeRootElement) {
-                try {
-                    observeRoot = document.querySelector(observeRootSelector) || observeRoot;
-                } catch (_error) {
-                    observeRoot = document.body || document.documentElement;
-                }
+        if (observeRootSelector && !observeRootElement) {
+            try {
+                observeRoot = document.querySelector(observeRootSelector) || observeRoot;
+            } catch (_error) {
+                observeRoot = document.body || document.documentElement;
             }
-
-            observer.observe(observeRoot, {
-                childList: true,
-                subtree: true
-            });
         }
+
+        observer.observe(observeRoot, {
+            childList: true,
+            subtree: true
+        });
+    }
 })();

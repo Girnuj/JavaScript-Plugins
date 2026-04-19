@@ -1283,7 +1283,8 @@
         }
     }
 
-    window.FormValidate = FormValidate;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.FormValidate = FormValidate;
 
     /**
      * Inicializa automaticamente las instancias del plugin y observa cambios en el DOM.
@@ -1312,23 +1313,23 @@
         });
     });
 
-        const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
-        if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
-            const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim()
-                , observeRootElement = document.querySelector('[data-pp-observe-root-form-validate]');
-            let observeRoot = observeRootElement || document.body || document.documentElement;
+    const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
+    if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
+        const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim()
+            , observeRootElement = document.querySelector('[data-pp-observe-root-form-validate]');
+        let observeRoot = observeRootElement || document.body || document.documentElement;
 
-            if (observeRootSelector && !observeRootElement) {
-                try {
-                    observeRoot = document.querySelector(observeRootSelector) || observeRoot;
-                } catch (_error) {
-                    observeRoot = document.body || document.documentElement;
-                }
+        if (observeRootSelector && !observeRootElement) {
+            try {
+                observeRoot = document.querySelector(observeRootSelector) || observeRoot;
+            } catch (_error) {
+                observeRoot = document.body || document.documentElement;
             }
-
-            observer.observe(observeRoot, {
-                childList: true,
-                subtree: true
-            });
         }
+
+        observer.observe(observeRoot, {
+            childList: true,
+            subtree: true
+        });
+    }
 })();

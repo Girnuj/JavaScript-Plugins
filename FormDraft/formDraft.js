@@ -791,7 +791,8 @@
         }
     }
 
-    window.FormDraft = FormDraft;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.FormDraft = FormDraft;
 
     /**
      * Inicializa automaticamente las instancias y activa observacion de cambios en el DOM.

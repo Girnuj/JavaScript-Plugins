@@ -409,7 +409,7 @@
 
       checkoutForm.addEventListener('success.plugin.formRequest', function () {
         addLog('success.plugin.formRequest');
-        const modal = window.Modal.getInstance(modalEl);
+        const modal = window.Plugins.Modal.getInstance(modalEl);
         if (modal) {
           modal.hide();
         }
@@ -457,8 +457,8 @@
       });
 
       if (simpleForm instanceof HTMLFormElement && simpleSubmit instanceof HTMLElement) {
-        const simpleRs = window.RequestState && typeof window.RequestState.getInstance === 'function'
-            ? window.RequestState.getInstance(simpleSubmit)
+        const simpleRs = window.Plugins.RequestState && typeof window.Plugins.RequestState.getInstance === 'function'
+          ? window.Plugins.RequestState.getInstance(simpleSubmit)
             : null;
 
         syncStateField(simpleSubmit, 'simpleState', 'state.plugin.requestState(simple) -> ');

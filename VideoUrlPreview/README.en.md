@@ -74,9 +74,9 @@ If you need to initialize a specific block manually:
 
 ```html
 <script>
-  VideoUrlPreview.init(document.querySelector('#myInput'));
+  window.Plugins.VideoUrlPreview.init(document.querySelector('#myInput'));
   // or on a full container
-  VideoUrlPreview.initAll(document.querySelector('#myForm'));
+  window.Plugins.VideoUrlPreview.initAll(document.querySelector('#myForm'));
 </script>
 ```
 
@@ -85,20 +85,20 @@ If you need to initialize a specific block manually:
 ```html
 <script>
   const input = document.querySelector('#myInput')
-      , instance = VideoUrlPreview.init(input);
+      , instance = window.Plugins.VideoUrlPreview.init(input);
 
-  VideoUrlPreview.getInstance(input);
-  VideoUrlPreview.destroy(input, { clearPreview: true });
-  VideoUrlPreview.destroyAll(document.querySelector('#myForm'));
+  window.Plugins.VideoUrlPreview.getInstance(input);
+  window.Plugins.VideoUrlPreview.destroy(input, { clearPreview: true });
+  window.Plugins.VideoUrlPreview.destroyAll(document.querySelector('#myForm'));
 
   instance.destroy();
 </script>
 ```
 
-- `VideoUrlPreview.init(element, options)`: creates or reuses an instance.
-- `VideoUrlPreview.getInstance(element)`: returns the current instance or `null`.
-- `VideoUrlPreview.destroy(element, options)`: tears down a specific instance.
-- `VideoUrlPreview.destroyAll(root, options)`: tears down all instances inside a container.
+- `window.Plugins.VideoUrlPreview.init(element, options)`: creates or reuses an instance.
+- `window.Plugins.VideoUrlPreview.getInstance(element)`: returns the current instance or `null`.
+- `window.Plugins.VideoUrlPreview.destroy(element, options)`: tears down a specific instance.
+- `window.Plugins.VideoUrlPreview.destroyAll(root, options)`: tears down all instances inside a container.
 - `instance.destroy(options)`: removes listeners for the current instance.
 - `clearPreview: true`: option to clear the `<iframe>` `src` on destroy.
 

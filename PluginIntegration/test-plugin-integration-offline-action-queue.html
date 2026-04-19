@@ -89,7 +89,7 @@
   <script src="../NotificationPush/notificationPush.min.js"></script>
   <script>
     (function () {
-      window.OfflineActionQueue.registerProfile('integrationCreateOrder', {
+      window.Plugins.OfflineActionQueue.registerProfile('integrationCreateOrder', {
         storageKey: 'demo:plugin-integration:oaq',
         maxRetries: 6,
         baseRetryDelayMs: 700,
@@ -124,7 +124,7 @@
       }
 
       function updateSnapshot() {
-        var instance = window.OfflineActionQueue.getInstance(formEl);
+        var instance = window.Plugins.OfflineActionQueue.getInstance(formEl);
         if (!instance) return;
 
         var snapshot = instance.getQueueSnapshot();
@@ -188,7 +188,7 @@
       });
 
       btnFlushEl.addEventListener('click', function () {
-        var instance = window.OfflineActionQueue.getInstance(formEl);
+        var instance = window.Plugins.OfflineActionQueue.getInstance(formEl);
         if (!instance) return;
 
         formEl.classList.add('is-loading');
@@ -203,7 +203,7 @@
       });
 
       btnClearEl.addEventListener('click', function () {
-        var instance = window.OfflineActionQueue.getInstance(formEl);
+        var instance = window.Plugins.OfflineActionQueue.getInstance(formEl);
         if (!instance) return;
 
         instance.clearQueue();
@@ -221,7 +221,7 @@
         log('network simulation -> ' + (enabled ? 'FAIL ON' : 'FAIL OFF'));
 
         if (!enabled) {
-          var instance = window.OfflineActionQueue.getInstance(formEl);
+          var instance = window.Plugins.OfflineActionQueue.getInstance(formEl);
           instance && instance.flush();
         }
       });

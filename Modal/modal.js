@@ -474,5 +474,6 @@
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
 
-    window.Modal = Modal;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.Modal = Modal;
 })();

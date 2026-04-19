@@ -85,7 +85,7 @@ On trigger:
 <script>
   const host = document.querySelector('#cardA');
 
-  const instance = window.UIState.init(host, {
+  const instance = window.Plugins.UIState.init(host, {
     baseState: 'default',
     classPrefix: 'is-state-',
     disableOnStates: ['loading', 'disabled'],
@@ -107,22 +107,22 @@ On trigger:
   instance.setState('error', { message: 'Not available' });
   instance.restore();
 
-  window.UIState.getInstance(host);
-  window.UIState.destroy(host);
-  window.UIState.initAll(document);
-  window.UIState.destroyAll(document);
+  window.Plugins.UIState.getInstance(host);
+  window.Plugins.UIState.destroy(host);
+  window.Plugins.UIState.initAll(document);
+  window.Plugins.UIState.destroyAll(document);
 </script>
 ```
 
 Main methods:
 
-- window.UIState.init(element, options): creates or reuses a host instance.
+- window.Plugins.UIState.init(element, options): creates or reuses a host instance.
 - instance.setState(state, payload): applies a visual state with optional payload.
 - instance.restore(): restores original content and base state.
-- window.UIState.getInstance(element): returns current instance or null.
-- window.UIState.destroy(element): destroys a specific instance.
-- window.UIState.initAll(root): initializes all compatible hosts in a container.
-- window.UIState.destroyAll(root): destroys all instances in a container.
+- window.Plugins.UIState.getInstance(element): returns current instance or null.
+- window.Plugins.UIState.destroy(element): destroys a specific instance.
+- window.Plugins.UIState.initAll(root): initializes all compatible hosts in a container.
+- window.Plugins.UIState.destroyAll(root): destroys all instances in a container.
 
 ### Multiple classes per state
 

@@ -267,13 +267,13 @@
                 logs.textContent += message + '\n';
             }
 
-            window.FormValidate.registerCustomRule('promo-code-format', function (ctx) {
+            window.Plugins.FormValidate.registerCustomRule('promo-code-format', function (ctx) {
                 var value = String(ctx.value || '').trim();
                 if (!value) return true;
                 return /^DEV-\d{4}$/.test(value);
             });
 
-            window.FormValidate.registerCustomRule('promo-no-admin', function (ctx) {
+            window.Plugins.FormValidate.registerCustomRule('promo-no-admin', function (ctx) {
                 var value = String(ctx.value || '').trim().toLowerCase();
                 if (!value) return true;
                 return !value.includes('admin') || 'El codigo no puede contener la palabra admin.';
@@ -286,7 +286,7 @@
                 }));
             };
 
-            window.FormRequest.init(form, {
+            window.Plugins.FormRequest.init(form, {
                 onSuccess: function (data) {
                     log('FormRequest success: ' + JSON.stringify(data));
                 },

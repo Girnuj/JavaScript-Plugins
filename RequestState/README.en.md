@@ -189,7 +189,7 @@ Example:
 <script>
   const trigger = document.querySelector('[data-request-state]');
 
-  const instance = window.RequestState.init(trigger, {
+  const instance = window.Plugins.RequestState.init(trigger, {
     delayMs: 500,
     autoResetMs: 1800,
     retryCount: 1,
@@ -229,20 +229,20 @@ Example:
     }
   });
 
-  window.RequestState.getInstance(trigger);
-  window.RequestState.destroy(trigger);
-  window.RequestState.initAll(document);
-  window.RequestState.destroyAll(document);
+  window.Plugins.RequestState.getInstance(trigger);
+  window.Plugins.RequestState.destroy(trigger);
+  window.Plugins.RequestState.initAll(document);
+  window.Plugins.RequestState.destroyAll(document);
 </script>
 ```
 
 Main methods:
 
-- `window.RequestState.init(element, options)`: creates or reuses instance.
-- `window.RequestState.getInstance(element)`: returns instance or `null`.
-- `window.RequestState.destroy(element)`: destroys one instance.
-- `window.RequestState.initAll(root)`: initializes all matching triggers.
-- `window.RequestState.destroyAll(root)`: destroys instances inside a container.
+- `window.Plugins.RequestState.init(element, options)`: creates or reuses instance.
+- `window.Plugins.RequestState.getInstance(element)`: returns instance or `null`.
+- `window.Plugins.RequestState.destroy(element)`: destroys one instance.
+- `window.Plugins.RequestState.initAll(root)`: initializes all matching triggers.
+- `window.Plugins.RequestState.destroyAll(root)`: destroys instances inside a container.
 
 ## Events
 

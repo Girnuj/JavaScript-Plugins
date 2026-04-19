@@ -107,7 +107,7 @@
       });
 
       resetButton.addEventListener('click', function () {
-        const instance = window.InfinitePager.getInstance(trigger);
+        const instance = window.Plugins.InfinitePager.getInstance(trigger);
         if (!instance) return;
         instance.reset({ clearTarget: true });
         log('reset');

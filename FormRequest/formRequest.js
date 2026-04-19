@@ -925,5 +925,6 @@
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
 
-    window.FormRequest = FormRequest;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.FormRequest = FormRequest;
 })();

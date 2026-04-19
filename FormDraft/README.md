@@ -78,7 +78,7 @@ Nota: `FormDraft` limpia el borrador persistido (storage). Si tambien quieres li
 <script>
   const form = document.querySelector('form[data-form-draft]');
 
-  const instance = window.FormDraft.init(form, {
+  const instance = window.Plugins.FormDraft.init(form, {
     storage: 'local',
     key: 'checkout-v1',
     debounceMs: 300,
@@ -90,10 +90,10 @@ Nota: `FormDraft` limpia el borrador persistido (storage). Si tambien quieres li
   instance.restoreNow();
   instance.clearDraft();
 
-  window.FormDraft.getInstance(form);
-  window.FormDraft.destroy(form);
-  window.FormDraft.initAll(document);
-  window.FormDraft.destroyAll(document);
+  window.Plugins.FormDraft.getInstance(form);
+  window.Plugins.FormDraft.destroy(form);
+  window.Plugins.FormDraft.initAll(document);
+  window.Plugins.FormDraft.destroyAll(document);
 </script>
 ```
 

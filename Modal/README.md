@@ -85,7 +85,7 @@ Estado abierto:
 ```js
 const modalElement = document.querySelector('#miModal');
 
-const instance = window.Modal.init(modalElement, {
+const instance = window.Plugins.Modal.init(modalElement, {
   static: false,
   keyboard: true,
   focus: true,
@@ -96,22 +96,22 @@ instance.show();
 instance.hide();
 instance.toggle();
 
-window.Modal.getInstance(modalElement);
-window.Modal.destroy(modalElement);
-window.Modal.initAll();
-window.Modal.destroyAll();
+window.Plugins.Modal.getInstance(modalElement);
+window.Plugins.Modal.destroy(modalElement);
+window.Plugins.Modal.initAll();
+window.Plugins.Modal.destroyAll();
 ```
 
 Metodos principales:
 
-- window.Modal.init(element, options): crea o reutiliza una instancia del modal.
+- window.Plugins.Modal.init(element, options): crea o reutiliza una instancia del modal.
 - instance.show(): abre el modal.
 - instance.hide(): cierra el modal.
 - instance.toggle(): alterna entre abierto/cerrado.
-- window.Modal.getInstance(element): devuelve la instancia actual o null.
-- window.Modal.destroy(element): destruye una instancia concreta.
-- window.Modal.initAll(root): inicializa todos los modales encontrados.
-- window.Modal.destroyAll(root): destruye todas las instancias encontradas.
+- window.Plugins.Modal.getInstance(element): devuelve la instancia actual o null.
+- window.Plugins.Modal.destroy(element): destruye una instancia concreta.
+- window.Plugins.Modal.initAll(root): inicializa todos los modales encontrados.
+- window.Plugins.Modal.destroyAll(root): destruye todas las instancias encontradas.
 
 ## Eventos custom
 

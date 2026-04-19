@@ -80,7 +80,7 @@ For production, use `confirmAction.min.js`. For debugging, use `confirmAction.js
 <script>
   const subject = document.querySelector('[data-confirm-action]');
 
-  const instance = window.ConfirmAction.init(subject, {
+  const instance = window.Plugins.ConfirmAction.init(subject, {
     title: 'Delete record',
     message: 'This action cannot be undone.',
     enabled: true,
@@ -103,10 +103,10 @@ For production, use `confirmAction.min.js`. For debugging, use `confirmAction.js
     }
   });
 
-  window.ConfirmAction.getInstance(subject);
-  window.ConfirmAction.destroy(subject);
-  window.ConfirmAction.initAll(document);
-  window.ConfirmAction.destroyAll(document);
+  window.Plugins.ConfirmAction.getInstance(subject);
+  window.Plugins.ConfirmAction.destroy(subject);
+  window.Plugins.ConfirmAction.initAll(document);
+  window.Plugins.ConfirmAction.destroyAll(document);
 </script>
 ```
 

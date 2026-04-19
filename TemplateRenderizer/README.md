@@ -47,9 +47,10 @@ Para uso en produccion, si no necesitas leer el codigo fuente, puedes incluir la
 
 <script src="./templateRenderizer.js"></script>
 <script>
-  const renderer = new templateRenderizer({
+
+  const renderer = new window.Plugins.TemplateRenderizer({
     templateSelector: '#cardTemplate'
-  });
+  }); 
 
   const html = renderer.render({
     title: 'Hola mundo',
@@ -77,7 +78,7 @@ Su configuracion se realiza por JavaScript mediante `templateSelector` y opcione
 
 ```html
 <script>
-  const renderer = new templateRenderizer({
+  const renderer = new window.Plugins.TemplateRenderizer({
     templateSelector: '#myTemplate'
   });
 
@@ -87,7 +88,7 @@ Su configuracion se realiza por JavaScript mediante `templateSelector` y opcione
 </script>
 ```
 
-- `new templateRenderizer(options)`: crea una instancia del renderizador.
+- `new window.Plugins.TemplateRenderizer(options)`: crea una instancia del renderizador.
 - `options.templateSelector`: selector CSS del template origen.
 - `options.propertiesNames` (opcional): lista manual de placeholders a reemplazar.
 - `renderer.render(data)`: devuelve el HTML final con reemplazos.

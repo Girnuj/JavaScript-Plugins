@@ -794,5 +794,6 @@
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
 
-    window.ModalSteps = ModalSteps;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.ModalSteps = ModalSteps;
 })();

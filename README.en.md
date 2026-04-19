@@ -111,9 +111,9 @@ To keep strong performance when multiple plugins coexist in the same view, the r
 ```html
 <html data-pp-observe-global="false"></html>
 <script>
-  window.FormValidate.initAll(document);
-  window.FormRequest.initAll(document);
-  window.Modal.initAll(document);
+  window.Plugins.FormValidate.initAll(document);
+  window.Plugins.FormRequest.initAll(document);
+  window.Plugins.Modal.initAll(document);
 </script>
 ```
 
@@ -143,6 +143,22 @@ Priority rule: direct plugin root > selector root on `<html>` > `document.body`.
 
 Architecture note: when combining network-related plugins (for example `FormRequest` with `RequestState`), keep a single real request owner to avoid double submissions and duplicated lifecycle events.
 
+## Clean Global Access: window.Plugins
+
+All plugins in this repository are registered under the global object `window.Plugins`, for example:
+
+```js
+// Access any plugin:
+
+const instance = window.Plugins.FormRequest.init(...);
+
+// Or for GlobalState:
+
+window.Plugins.GlobalState.set('user', {...});
+
+```
+
+This prevents cluttering the global `window` space when using multiple plugins simultaneously and keeps the code more organized.
 
 ## Repository Structure
 

@@ -593,5 +593,6 @@
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
 
-    window.UIState = UIState;
+    window.Plugins = window.Plugins || {};
+    window.Plugins.UIState = UIState;
 })();

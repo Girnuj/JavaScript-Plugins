@@ -68,7 +68,7 @@ El plugin se auto-inicializa sobre modales que cumplan:
 <script>
   const modal = document.querySelector('#stepsModal');
 
-  const instance = window.ModalSteps.init(modal, {
+  const instance = window.Plugins.ModalSteps.init(modal, {
     reloadOnNoContent: true,
     jsonResponseHandler: function (data, status, subject) {
       console.log('JSON', status, data, subject);
@@ -88,22 +88,22 @@ El plugin se auto-inicializa sobre modales que cumplan:
   // Carga manual de contenido en el contenedor de pasos.
   instance.load('<form action="/steps/submit"><button type="submit">Enviar</button></form>');
 
-  window.ModalSteps.getInstance(modal);
-  window.ModalSteps.destroy(modal);
-  window.ModalSteps.initAll(document);
-  window.ModalSteps.destroyAll(document);
+  window.Plugins.ModalSteps.getInstance(modal);
+  window.Plugins.ModalSteps.destroy(modal);
+  window.Plugins.ModalSteps.initAll(document);
+  window.Plugins.ModalSteps.destroyAll(document);
 </script>
 ```
 
 Metodos principales:
 
-- window.ModalSteps.init(element, options): crea o reutiliza una instancia.
+- window.Plugins.ModalSteps.init(element, options): crea o reutiliza una instancia.
 - instance.bind(getFirstStepRequest): enlaza listeners y callback opcional para primer step.
 - instance.load(html, submitDataGetter): carga contenido manual en el contenedor principal.
-- window.ModalSteps.getInstance(element): devuelve la instancia actual o null.
-- window.ModalSteps.destroy(element): destruye una instancia concreta.
-- window.ModalSteps.initAll(root): inicializa todas las coincidencias dentro de un contenedor.
-- window.ModalSteps.destroyAll(root): destruye todas las coincidencias dentro de un contenedor.
+- window.Plugins.ModalSteps.getInstance(element): devuelve la instancia actual o null.
+- window.Plugins.ModalSteps.destroy(element): destruye una instancia concreta.
+- window.Plugins.ModalSteps.initAll(root): inicializa todas las coincidencias dentro de un contenedor.
+- window.Plugins.ModalSteps.destroyAll(root): destruye todas las coincidencias dentro de un contenedor.
 
 ## Eventos del plugin
 
