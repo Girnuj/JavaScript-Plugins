@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para mover elementos HTML dentro de una lista o colección.
+ * @module ItemMover
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module ItemMover
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
 	'use strict';

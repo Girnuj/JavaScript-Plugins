@@ -120,3 +120,8 @@ Este plugin no registra `MutationObserver` automatico ni expone un atributo `dat
 
 La inicializacion y uso se realizan directamente por JavaScript con `new templateRenderizer(...)`.
 
+## Licencia
+
+Este plugin se distribuye bajo la licencia MIT.
+Copyright (c) 2026 Samuel Montenegro
+Consulta el archivo LICENSE en la raíz del repositorio para los términos completos.

@@ -119,3 +119,9 @@ This plugin does not register an automatic `MutationObserver` and does not expos
 
 Initialization and usage are performed directly in JavaScript with `new templateRenderizer(...)`.
 
+## License
+
+This plugin is distributed under the MIT license.
+
+Copyright (c) 2026 Samuel Montenegro
+See the LICENSE file in the repository root for full terms. 

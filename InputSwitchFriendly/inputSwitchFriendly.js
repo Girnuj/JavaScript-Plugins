@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para mostrar etiquetas amigables en switches de entrada.
+ * @module InputSwitchFriendly
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module InputSwitchFriendly
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
 	'use strict';

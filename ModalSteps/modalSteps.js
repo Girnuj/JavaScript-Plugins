@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para transformar un modal en un formulario por pasos.
+ * @module ModalSteps
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module ModalSteps
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

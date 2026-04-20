@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para notificaciones push por data-* con payload dinamico.
+ * @module NotificationPush
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module NotificationPush
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

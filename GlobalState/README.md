@@ -68,3 +68,9 @@ Ambos pueden complementarse: por ejemplo, puedes disparar una notificación visu
 - No abuses de estado global para todo; úsalo solo cuando realmente se requiera compartir información o eventos.
 
 ---
+
+## Licencia
+
+Este plugin se distribuye bajo la licencia MIT.
+Copyright (c) 2026 Samuel Montenegro
+Consulta el archivo LICENSE en la raíz del repositorio para los términos completos.

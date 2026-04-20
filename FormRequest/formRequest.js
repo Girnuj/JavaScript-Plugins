@@ -1,11 +1,12 @@
 ﻿/**
  * @fileoverview Plugin nativo para enviar formularios con fetch usando atributos data-*.
- * @version 1.0
+ * @module FormRequest
+ * @version 2.0
  * @since 2026
  * @author Samuel Montenegro
- * @module FormRequest
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
-
 (function () {
     'use strict';
 

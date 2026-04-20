@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para paginacion incremental con boton "ver mas" o infinite scroll.
+ * @module InfinitePager
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module InfinitePager
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

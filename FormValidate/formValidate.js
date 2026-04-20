@@ -1,11 +1,12 @@
 ﻿/**
  * @fileoverview Plugin nativo para agregar validaciones extendidas por data-* en formularios.
+ * @module FormValidate
  * @version 2.0
  * @since 2026
  * @author Samuel Montenegro
- * @module FormValidate
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
-
 (function () {
     'use strict';
 

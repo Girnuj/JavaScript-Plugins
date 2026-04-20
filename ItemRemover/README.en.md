@@ -146,3 +146,9 @@ data-pp-observe-root-item-remover
 2. `data-pp-observe-root` on `<html>`
 3. `document.body`
 
+## License
+
+This plugin is distributed under the MIT license.
+
+Copyright (c) 2026 Samuel Montenegro
+See the LICENSE file in the repository root for full terms.

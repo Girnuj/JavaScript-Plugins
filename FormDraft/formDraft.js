@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para guardar y restaurar borradores de formularios en localStorage/sessionStorage.
+ * @module FormDraft
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module FormDraft
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

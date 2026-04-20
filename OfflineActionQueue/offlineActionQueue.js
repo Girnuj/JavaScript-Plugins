@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para encolar acciones offline y reintentarlas al recuperar conectividad.
+ * @module OfflineActionQueue
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module OfflineActionQueue
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

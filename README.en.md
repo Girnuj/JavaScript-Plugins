@@ -204,20 +204,3 @@ Inside each plugin folder:
 
 Maintain a simple, reusable, and well-documented plugin library so that anyone can quickly integrate them into their projects by copying the JS(pluginName.js) or its .min version, and adding it to the required project views in a very simple and lightweight way.
 
-## How To Contribute
-
-If you want to contribute improvements or a new plugin:
-
-1. Create (or update) the plugin folder following repository structure.
-2. Implement source file (`plugin.js`) keeping `data-*` auto-init and public API when applicable.
-3. Add/update plugin docs in `README.md` and `README.en.md`.
-4. Include a test HTML file (`test-pluginName.html`) with real usage examples.
-5. Generate minified build (`plugin.min.js`) before publishing changes.
-6. Verify there are no errors and demo examples work in browser.
-7. Update root `README.md` and `README.en.md` to list the plugin (or document the change).
-
-Suggested best practices:
-
-- Keep ECMAScript 2020 compatibility.
-- Avoid unnecessary external dependencies.
-- Do not break existing public API without clearly documenting the change.

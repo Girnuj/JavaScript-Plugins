@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para previsualizar videos de YouTube a partir de una URL ingresada.
+ * @module VideoUrlPreview
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module VideoUrlPreview
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
 	'use strict';

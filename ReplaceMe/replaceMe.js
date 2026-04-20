@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para reemplazar un elemento por HTML remoto al hacer clic.
+ * @module ReplaceMe
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module ReplaceMe
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
 	'use strict';

@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para manejar modales de manera consistente.
+ * @module Modal
  * @version 3.0
  * @since 2026
- * @author Samuel Montenegro 
- * @module Modal
+ * @author Samuel Montenegro
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

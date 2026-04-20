@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para sincronizar estado de controles UI con query params en la URL.
+ * @module QuerySyncState
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module QuerySyncState
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

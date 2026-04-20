@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para selects dependientes (parent-child) con carga dinamica via fetch.
+ * @module ChildSelect
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module ChildSelect
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
 	'use strict';

@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para previsualizar estados de UI en componentes.
+ * @module UIState
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module UIState
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

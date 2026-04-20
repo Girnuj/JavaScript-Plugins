@@ -1,10 +1,12 @@
 
 /**
  * @fileoverview Micro-plugin para gestión de estado global y pub/sub de eventos.
+ * @module GlobalState
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module GlobalState
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

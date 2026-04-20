@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para remover elementos HTML de una lista o colección.
+ * @module ItemRemover
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module ItemRemover
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
 	'use strict';

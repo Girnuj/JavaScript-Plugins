@@ -1,9 +1,11 @@
 ﻿/**
  * @fileoverview Plugin nativo para gestionar estados de request (idle/loading/success/error) por data-*.
+ * @module RequestState
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module RequestState
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';

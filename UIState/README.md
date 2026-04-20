@@ -183,3 +183,9 @@ data-pp-observe-root-ui-state
 2. `data-pp-observe-root` en `<html>`
 3. `document.body`
 
+## Licencia
+
+Este plugin se distribuye bajo la licencia MIT.
+Copyright (c) 2026 Samuel Montenegro
+Consulta el archivo LICENSE en la raíz del repositorio para los términos completos.
+

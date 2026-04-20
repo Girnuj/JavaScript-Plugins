@@ -1,9 +1,11 @@
 /**
  * @fileoverview Plugin nativo para previsualizar imagenes al subir archivos.
+ * @module ImgUploadPreview
  * @version 3.0
  * @since 2026
  * @author Samuel Montenegro
- * @module ImgUploadPreview
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
 	'use strict';

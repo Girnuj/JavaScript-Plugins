@@ -1,9 +1,11 @@
 ﻿/**
  * @fileoverview Plugin nativo para confirmar acciones sensibles o destructivas.
+ * @module ConfirmAction
  * @version 1.0
  * @since 2026
  * @author Samuel Montenegro
- * @module ConfirmAction
+ * @license MIT
+ * @copyright (c) 2026 Samuel Montenegro
  */
 (function () {
     'use strict';
