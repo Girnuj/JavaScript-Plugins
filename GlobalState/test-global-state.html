@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <title>Test GlobalState</title>
-  <script src="globalState.js"></script>
+  <link rel="stylesheet" href="../TestPluginCommon/test-plugin-common.css" />
   <style>
-    .log { background: #f4f4f4; border: 1px solid #ccc; padding: 1em; margin-top: 1em; max-width: 600px; }
+    .log { border: 1px solid #000000; padding: 1em; margin-top: 1em; max-width: 600px; }
     input, button { margin: 0.5em 0; }
   </style>
 </head>
@@ -23,7 +23,8 @@
   <button id="publicarEventoBtn">Publicar evento 'notificacion'</button>
 
   <div class="log" id="log"></div>
-
+  
+  <script src="globalState.min.js"></script>
   <script>
     const log = (msg) => {
       const el = document.getElementById('log');

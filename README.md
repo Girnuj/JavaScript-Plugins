@@ -197,6 +197,8 @@ En cada carpeta de plugin:
    - Opciones y `data-*` disponibles (si aplica).
 3. Un archivo de prueba HTML opcional para validar rapidamente el funcionamiento.
 
+> ℹ️ Si deseas contribuir, por favor revisa la guía en [CONTRIBUTING.md](CONTRIBUTING.md) para conocer las pautas y el flujo recomendado.
+
 ## Objetivo
 
 Mantener una biblioteca de plugins simple, reutilizable y bien documentada para que cualquier persona pueda integrarlos rapido en sus proyectos copiando solamente el JS(pluginName.js) o su version .min e incorporandolos en sus proyectos o vistas necesarias de una forma muy simple y liviana.

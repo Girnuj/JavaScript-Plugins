@@ -217,29 +217,6 @@
     };
 
     /**
-     * Limpia instancias cuyos nodos fueron removidos del DOM.
-     * @returns {void}
-     */
-    const flushPendingRemovals = () => {
-        PENDING_REMOVALS.forEach((node) => {
-            if (!node.isConnected) {
-                FormRequest.destroyAll(node);
-            }
-            PENDING_REMOVALS.delete(node);
-        });
-    };
-
-    /**
-     * Agenda chequeo diferido para evitar destroy en reubicaciones temporales.
-     * @param {Element} node Nodo removido en mutacion.
-     * @returns {void}
-     */
-    const scheduleRemovalCheck = (node) => {
-        PENDING_REMOVALS.add(node);
-        queueMicrotask(flushPendingRemovals);
-    };
-
-    /**
      * Extrae opciones declarativas (`data-form-*`) desde un formulario.
      *
      * @param {HTMLFormElement} element Formulario sujeto del plugin.
@@ -946,7 +923,30 @@
             return { register };
         })();
     }
-    
+
+    /**
+     * Limpia instancias cuyos nodos fueron removidos del DOM.
+     * @returns {void}
+     */
+    const flushPendingRemovals = () => {
+        PENDING_REMOVALS.forEach((node) => {
+            if (!node.isConnected) {
+                FormRequest.destroyAll(node);
+            }
+            PENDING_REMOVALS.delete(node);
+        });
+    };
+
+    /**
+     * Agenda chequeo diferido para evitar destroy en reubicaciones temporales.
+     * @param {Element} node Nodo removido en mutacion.
+     * @returns {void}
+     */
+    const scheduleRemovalCheck = (node) => {
+        PENDING_REMOVALS.add(node);
+        queueMicrotask(flushPendingRemovals);
+    };
+
     // Handler para mutaciones DOM (alta/baja de formularios)
     const formRequestDomHandler = (mutations) => {
         mutations.forEach((mutation) => {

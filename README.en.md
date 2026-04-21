@@ -200,6 +200,8 @@ Inside each plugin folder:
    - Available options and `data-*` attributes (if applicable).
 3. Optional test HTML file for quick validation.
 
+> ℹ️ If you wish to contribute, please review the guide in [CONTRIBUTING.md](CONTRIBUTING.md) to understand the recommended guidelines and workflow.
+
 ## Goal
 
 Maintain a simple, reusable, and well-documented plugin library so that anyone can quickly integrate them into their projects by copying the JS(pluginName.js) or its .min version, and adding it to the required project views in a very simple and lightweight way.
