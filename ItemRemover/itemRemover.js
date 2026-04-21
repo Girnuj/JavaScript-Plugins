@@ -67,29 +67,6 @@
 	};
 
 	/**
-	 * Limpia instancias asociadas a nodos removidos del DOM.
-	 * @returns {void}
-	 */
-	const flushPendingRemovals = () => {
-		PENDING_REMOVALS.forEach((node) => {
-			if (!node.isConnected) {
-				ItemRemover.destroyAll(node);
-			}
-			PENDING_REMOVALS.delete(node);
-		});
-	};
-
-	/**
-	 * Agenda chequeo diferido para destruccion segura de instancias.
-	 * @param {Element} node Nodo removido en mutacion.
-	 * @returns {void}
-	 */
-	const scheduleRemovalCheck = (node) => {
-		PENDING_REMOVALS.add(node);
-		queueMicrotask(flushPendingRemovals);
-	};
-
-	/**
 	 * Opciones publicas de ItemRemover.
 	 * @typedef {Object} ItemRemoverOptions
 	 * @property {string} [targetItemSelector='[data-remove-item="item"]'] Selector del nodo a eliminar.
@@ -226,51 +203,117 @@
 		}
 	}
 
-	/**
-	 * Inicializa automaticamente instancias y observa cambios del DOM.
-	 *
-	 * @returns {void}
-	 */
-	const startAutoInit = () => {
-		ItemRemover.initAll(document);
+ 	/**
+     * ObserverDispatcher avanzado: permite a cada plugin observar solo el root que le corresponde,
+     * evitando múltiples MutationObserver redundantes y respetando la configuración global.
+     */
+    if (!window.Plugins) window.Plugins = {};
+    if (!window.Plugins.ObserverDispatcher) {
+        window.Plugins.ObserverDispatcher = (function() {
+            // Mapa: rootElement => { observer, handlers[] }
+            const roots = new WeakMap();
 
-		const observer = new MutationObserver((mutations) => {
-			mutations.forEach((mutation) => {
-				mutation.addedNodes.forEach((node) => {
-					if (node.nodeType !== 1) return;
-					PENDING_REMOVALS.delete(node);
-					ItemRemover.initAll(node);
-				});
+            /**
+             * Obtiene el root adecuado para un plugin según la prioridad documentada.
+             * @param {string} pluginKey Ej: 'item-remover'
+             * @returns {Element}
+             */
+            function resolveRoot(pluginKey) {
+                // 1. data-pp-observe-root-{plugin}
+                const attr = 'data-pp-observe-root-' + pluginKey
+                    , specific = document.querySelector('[' + attr + ']');
+                if (specific) return specific;
 
-				mutation.removedNodes.forEach((node) => {
-					if (node.nodeType !== 1) return;
-					scheduleRemovalCheck(node);
-				});
-			});
-		});
+                // 2. data-pp-observe-root en <html>
+                const html = document.documentElement
+                    , selector = html.getAttribute('data-pp-observe-root');
+                if (selector) {
+                    try {
+                        const el = document.querySelector(selector);
+                        if (el) return el;
+                    } catch (_) {}
+                }
 
-		const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
-		if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
-			const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim();
-			const observeRootElement = document.querySelector('[data-pp-observe-root-item-remover]');
-			let observeRoot = observeRootElement || document.body || document.documentElement;
+                // 3. Fallback seguro
+                return document.body || html;
+            }
 
-			if (observeRootSelector && !observeRootElement) {
-				try {
-					observeRoot = document.querySelector(observeRootSelector) || observeRoot;
-				} catch (_error) {
-					observeRoot = document.body || document.documentElement;
-				}
-			}
+            /**
+             * Registra un handler para un plugin sobre el root adecuado.
+             * @param {string} pluginKey
+             * @param {function} handler
+             */
+            function register(pluginKey, handler) {
+                const html = document.documentElement
+                    , observeGlobal = (html.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
+                if (["false", "0", "off", "no"].includes(observeGlobal)) return; // Observación global desactivada
 
-			observer.observe(observeRoot, { childList: true, subtree: true });
-		}
-	};
+                const root = resolveRoot(pluginKey);
+                let entry = roots.get(root);
+                if (!entry) {
+                    entry = { handlers: [], observer: null };
+                    entry.observer = new MutationObserver((mutations) => {
+                        entry.handlers.forEach(fn => {
+                            try { fn(mutations); } catch (e) {}
+                        });
+                    });
+                    entry.observer.observe(root, { childList: true, subtree: true });
+                    roots.set(root, entry);
+                }
+                entry.handlers.push(handler);
+            }
+
+            return { register };
+        })();
+    }
+
+    /**
+     * Limpia instancias cuyos nodos fueron removidos del DOM.
+     * @returns {void}
+     */
+    const flushPendingRemovals = () => {
+        PENDING_REMOVALS.forEach((node) => {
+            if (!node.isConnected) {
+                ItemRemover.destroyAll(node);
+            }
+            PENDING_REMOVALS.delete(node);
+        });
+    };
+
+    /**
+     * Agenda chequeo diferido para evitar destroy en reubicaciones temporales.
+     * @param {Element} node Nodo removido en mutacion.
+     * @returns {void}
+     */
+    const scheduleRemovalCheck = (node) => {
+        PENDING_REMOVALS.add(node);
+        queueMicrotask(flushPendingRemovals);
+    };
+
+    // Handler para mutaciones DOM (alta/baja de elementos)
+    const itemRemoverDomHandler = (mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType !== 1) return;
+                PENDING_REMOVALS.delete(node);
+                ItemRemover.initAll(node);
+            });
+            mutation.removedNodes.forEach((node) => {
+                if (node.nodeType !== 1) return;
+                scheduleRemovalCheck(node);
+            });
+        });
+    };
+
+    const startAutoInit = () => {
+        ItemRemover.initAll(document);
+        // Usar ObserverDispatcher para registrar el handler solo sobre el root adecuado
+        window.Plugins.ObserverDispatcher.register('item-remover', itemRemoverDomHandler);
+    };
 
 	document.readyState === 'loading'
 		? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
 		: startAutoInit();
 
-	window.Plugins = window.Plugins || {};
 	window.Plugins.ItemRemover = ItemRemover;
 })();
