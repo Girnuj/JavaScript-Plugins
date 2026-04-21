@@ -289,6 +289,7 @@ Puedes registrar reglas custom globales y usarlas en cualquier campo con `data-f
   });
 
   instance.validateForm({ emitEvents: true, focusFirst: true });
+  const errors = instance.getErrors();
 
   window.Plugins.FormValidate.getInstance(form);
   window.Plugins.FormValidate.destroy(form);
@@ -296,10 +297,12 @@ Puedes registrar reglas custom globales y usarlas en cualquier campo con `data-f
   window.Plugins.FormValidate.destroyAll(document);
 </script>
 ```
-Metodos principales:
+
+Métodos principales:
 
 - `window.Plugins.FormValidate.init(element, options)`: crea o reutiliza una instancia.
-- `instance.validateForm(config)`: ejecuta validacion completa y devuelve `true/false`.
+- `instance.validateForm(config)`: ejecuta validación completa y devuelve `true/false`.
+- `instance.getErrors()`: retorna los errores del último `validateForm` (array de errores, inmutable externamente).
 - `window.Plugins.FormValidate.getInstance(element)`: devuelve la instancia actual o `null`.
 - `window.Plugins.FormValidate.destroy(element)`: destruye una instancia concreta.
 - `window.Plugins.FormValidate.initAll(root)`: inicializa formularios compatibles en un contenedor.

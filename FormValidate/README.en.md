@@ -289,6 +289,7 @@ You can register global custom rules and reference them in fields via `data-fv-c
   });
 
   instance.validateForm({ emitEvents: true, focusFirst: true });
+  const errors = instance.getErrors();
 
   window.Plugins.FormValidate.getInstance(form);
   window.Plugins.FormValidate.destroy(form);
@@ -300,6 +301,7 @@ Main methods:
 
 - `window.Plugins.FormValidate.init(element, options)`: creates or reuses an instance.
 - `instance.validateForm(config)`: runs full validation and returns `true/false`.
+- `instance.getErrors()`: returns the errors from the last `validateForm` (array of errors, immutable externally).
 - `window.Plugins.FormValidate.getInstance(element)`: returns current instance or `null`.
 - `window.Plugins.FormValidate.destroy(element)`: destroys a specific instance.
 - `window.Plugins.FormValidate.initAll(root)`: initializes compatible forms in a container.

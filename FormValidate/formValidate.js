@@ -1,7 +1,7 @@
 ﻿/**
  * @fileoverview Plugin nativo para agregar validaciones extendidas por data-* en formularios.
  * @module FormValidate
- * @version 2.0
+ * @version 2.1
  * @since 2026
  * @author Samuel Montenegro
  * @license MIT
@@ -79,21 +79,55 @@
      * @type {string}
      */
     const SELECTOR_SUBJECT = 'form[data-form-validate]'
+
         /**
          * Registro de instancias por formulario.
          * @type {WeakMap<HTMLFormElement, FormValidate>}
          */
         , INSTANCES = new WeakMap()
+
         /**
          * Nodos removidos pendientes de limpieza diferida.
          * @type {Set<Element>}
          */
         , PENDING_REMOVALS = new Set()
+
         /**
          * Reglas custom registradas globalmente.
          * @type {Map<string, Function>}
          */
         , CUSTOM_RULES = new Map();
+
+    /**
+     * Mapa declarativo de atributos de regla => metodo validador de instancia.
+     * Centraliza el registro de reglas
+     * @type {Array<{attr: string, method: string}>}
+     */
+    const RULE_DEFINITIONS = [
+        { attr: 'data-fv-required-if',  method: 'validateRequiredIf'  },
+        { attr: 'data-fv-required-any', method: 'validateRequiredAny' },
+        { attr: 'data-fv-equals',       method: 'validateEquals'      },
+        { attr: 'data-fv-number-range', method: 'validateNumberRange' },
+        { attr: 'data-fv-no-whitespace',method: 'validateNoWhitespace'},
+        { attr: 'data-fv-min-checked',  method: 'validateMinChecked'  },
+        { attr: 'data-fv-max-files',    method: 'validateFileRules'   },
+        { attr: 'data-fv-file-max-mb',  method: 'validateFileRules'   },
+        { attr: 'data-fv-file-types',   method: 'validateFileRules'   },
+        { attr: 'data-fv-custom',       method: 'validateCustomRules' },
+    ];
+
+    /**
+     * Atributos de regla unicos usados para deteccion rapida en isRuleHost.
+     * @type {string[]}
+     */
+    const RULE_ATTRS = Array.from(new Set(RULE_DEFINITIONS.map(def => def.attr)));
+
+    /**
+     * Metodos de validacion unicos derivados de RULE_DEFINITIONS (en orden de ejecucion).
+     * Los metodos de archivo se agrupan bajo un unico 'validateFileRules'.
+     * @type {string[]}
+     */
+    const RULE_METHODS = Array.from(new Set(RULE_DEFINITIONS.map(def => def.method)));
 
     /**
      * Defaults de configuracion de FormValidate.
@@ -232,28 +266,24 @@
 
     /**
      * Determina si un campo define reglas extendidas de validacion por data attributes.
+     * Derivado dinamicamente de RULE_ATTRS para evitar mantenimiento duplicado.
      *
      * @param {Element} field Campo candidato.
-     * @returns {boolean} `true` cuando el campo tiene al menos una regla custom.
+     * @returns {boolean} `true` cuando el campo tiene al menos una regla declarada.
      */
     const isRuleHost = (field) => {
         if (!isSupportedField(field)) return false;
         if (field.disabled) return false;
-
-        return field.hasAttribute('data-fv-equals')
-            || field.hasAttribute('data-fv-required-if')
-            || field.hasAttribute('data-fv-required-any')
-            || field.hasAttribute('data-fv-number-range')
-            || field.hasAttribute('data-fv-no-whitespace')
-            || field.hasAttribute('data-fv-min-checked')
-            || field.hasAttribute('data-fv-max-files')
-            || field.hasAttribute('data-fv-file-max-mb')
-            || field.hasAttribute('data-fv-file-types')
-            || field.hasAttribute('data-fv-custom');
+        return RULE_ATTRS.some(attr => field.hasAttribute(attr));
     };
 
     /**
      * Normaliza el valor de un campo de formulario a string, considerando checkboxes y radios.
+     *
+     * NOTA: Para checkboxes, devuelve `field.value` cuando esta marcado (o 'on' si no tiene value),
+     * y cadena vacia cuando no lo esta. Si usas `data-fv-required-if` apuntando a un checkbox,
+     * el valor esperado debe coincidir con `field.value` del checkbox (por defecto 'on').
+     *
      * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field Campo a normalizar.
      * @returns {string}
      */
@@ -346,6 +376,12 @@
 
     /**
      * Verifica si un archivo cumple con un tipo aceptado (por extensión o MIME).
+     *
+     * NOTA: La validacion se basa en `file.name` (extension) y `file.type` (MIME reportado
+     * por el navegador). Ambos valores son controlados por el cliente y pueden ser falsificados
+     * renombrando el archivo. Esta validacion es una primera capa de UX, no una garantia de
+     * seguridad. Siempre validar el tipo de archivo en el servidor.
+     *
      * @param {File} file Archivo a validar.
      * @param {string} token Token de tipo aceptado (ej: .jpg, image/*).
      * @returns {boolean}
@@ -367,6 +403,12 @@
 
         return file.type.toLowerCase() === normalizedToken;
     };
+
+    /**
+     * Genera un ID unico para nodos de mensaje sin ID propio.
+     * @returns {string}
+     */
+    const generateMessageId = () => 'fv-msg-' + Math.random().toString(36).slice(2);
 
     /**
      * Opciones publicas para configurar reglas, clases y estrategia de validacion.
@@ -423,6 +465,8 @@
             this.subject = element;
             this.options = { ...FORM_VALIDATE_DEFAULTS, ...options };
             this.isBound = false;
+            /** @type {ValidationError[]} Cache de errores del ultimo validateForm. */
+            this._lastErrors = [];
             this.handleSubmitCapture = this.handleSubmitCapture.bind(this);
             this.handleBeforeFormRequest = this.handleBeforeFormRequest.bind(this);
             this.handleInput = this.handleInput.bind(this);
@@ -440,7 +484,7 @@
                 || this.subject.querySelector('[asp-validation-summary]');
             if (summary) return summary;
 
-            // 2. Fallback: summarySelector del plugin
+            // 2. Fallback: summarySelector del plugin (data-fv-message-for tiene prioridad sobre asp-validation-for)
             const selector = this.options.summarySelector;
             if (!selector || typeof selector !== 'string') return null;
             try {
@@ -515,6 +559,7 @@
 
         /**
          * Obtiene el nodo donde se mostrara el mensaje del campo.
+         * Prioridad: data-fv-message-target > data-fv-message-for > asp-validation-for.
          * @param {HTMLElement} field Campo objetivo.
          * @returns {HTMLElement|null}
          */
@@ -529,15 +574,29 @@
             }
 
             const key = this.getFieldKey(field);
-            // 1. data-fv-message-for (plugin nativo)
+
+            // 1. data-fv-message-for (plugin nativo — prioridad sobre asp-validation-for)
             let target = this.subject.querySelector('[data-fv-message-for="' + CSS.escape(key) + '"]');
             if (target) return target;
 
-            // 2. asp-validation-for (Razor/.NET)
+            // 2. asp-validation-for (Razor/.NET — fallback)
             target = this.subject.querySelector('[asp-validation-for="' + CSS.escape(key) + '"]');
             if (target) return target;
 
             return null;
+        }
+
+        /**
+         * Asegura que el nodo de mensaje tenga un ID y lo vincula al campo via aria-describedby.
+         * @param {HTMLElement} field Campo objetivo.
+         * @param {HTMLElement} messageTarget Nodo de mensaje.
+         * @returns {void}
+         */
+        linkAriaDescribedBy(field, messageTarget) {
+            if (!messageTarget.id) {
+                messageTarget.id = generateMessageId();
+            }
+            field.setAttribute('aria-describedby', messageTarget.id);
         }
 
         /**
@@ -549,6 +608,7 @@
             this.getInvalidClassTokens(field).forEach((className) => field.classList.remove(className));
             this.getValidClassTokens(field).forEach((className) => field.classList.remove(className));
             field.removeAttribute('aria-invalid');
+            field.removeAttribute('aria-describedby');
             field.setCustomValidity('');
 
             const messageTarget = this.getMessageTarget(field);
@@ -567,6 +627,7 @@
             this.getInvalidClassTokens(field).forEach((className) => field.classList.remove(className));
             this.getValidClassTokens(field).forEach((className) => field.classList.add(className));
             field.removeAttribute('aria-invalid');
+            field.removeAttribute('aria-describedby');
             field.setCustomValidity('');
 
             const messageTarget = this.getMessageTarget(field);
@@ -578,6 +639,7 @@
 
         /**
          * Aplica estado visual de error y mensaje en el campo.
+         * Vincula aria-describedby al nodo de mensaje para accesibilidad.
          * @param {HTMLElement} field Campo objetivo.
          * @param {string} message Mensaje final de error.
          * @returns {void}
@@ -591,6 +653,7 @@
 
             const messageTarget = this.getMessageTarget(field);
             if (messageTarget) {
+                this.linkAriaDescribedBy(field, messageTarget);
                 messageTarget.textContent = resolvedMessage;
                 messageTarget.hidden = false;
             }
@@ -603,6 +666,7 @@
          * @returns {string}
          */
         getDefaultMessage(rule, detail) {
+            const d = detail || {};
             switch (rule) {
                 case 'requiredIf':
                     return 'Este campo es obligatorio para la condicion configurada.';
@@ -611,24 +675,24 @@
                 case 'equals':
                     return 'Este campo debe coincidir con el campo relacionado.';
                 case 'numberRange':
-                    if (detail && detail.min != null && detail.max != null) {
-                        return 'Este campo debe estar entre ' + detail.min + ' y ' + detail.max + '.';
+                    if (d.min != null && d.max != null) {
+                        return 'Este campo debe estar entre ' + d.min + ' y ' + d.max + '.';
                     }
-                    if (detail && detail.min != null) {
-                        return 'Este campo debe ser mayor o igual a ' + detail.min + '.';
+                    if (d.min != null) {
+                        return 'Este campo debe ser mayor o igual a ' + d.min + '.';
                     }
-                    if (detail && detail.max != null) {
-                        return 'Este campo debe ser menor o igual a ' + detail.max + '.';
+                    if (d.max != null) {
+                        return 'Este campo debe ser menor o igual a ' + d.max + '.';
                     }
                     return 'Este campo debe tener un valor numerico valido.';
                 case 'noWhitespace':
                     return 'Este campo no permite espacios en blanco.';
                 case 'minChecked':
-                    return 'Selecciona al menos ' + detail.min + ' opcion(es).';
+                    return 'Selecciona al menos ' + (d.min ?? '?') + ' opcion(es).';
                 case 'maxFiles':
-                    return 'Solo puedes adjuntar hasta ' + detail.max + ' archivo(s).';
+                    return 'Solo puedes adjuntar hasta ' + (d.max ?? '?') + ' archivo(s).';
                 case 'fileMaxMb':
-                    return 'El tamano maximo por archivo es ' + detail.maxMb + ' MB.';
+                    return 'El tamano maximo por archivo es ' + (d.maxMb ?? '?') + ' MB.';
                 case 'fileTypes':
                     return 'Tipo de archivo no permitido.';
                 default:
@@ -684,9 +748,10 @@
          * Resuelve mensaje final para una regla custom.
          * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field Campo evaluado.
          * @param {string} ruleName Nombre de regla custom.
+         * @param {Object} [detail={}] Datos auxiliares para componer mensaje dinamico.
          * @returns {string}
          */
-        resolveCustomMessage(field, ruleName) {
+        resolveCustomMessage(field, ruleName, detail) {
             const specificAttr = 'data-fv-message-custom-' + toKebabCase(ruleName)
                 , specific = field.getAttribute(specificAttr)
                 , generic = field.dataset.fvMessageCustom;
@@ -730,7 +795,7 @@
                     return {
                         valid: false,
                         rule: 'custom:' + ruleName,
-                        message: this.resolveCustomMessage(field, ruleName),
+                        message: this.resolveCustomMessage(field, ruleName, {}),
                         detail: {},
                     };
                 }
@@ -743,7 +808,7 @@
                     return {
                         valid: false,
                         rule: 'custom:' + ruleName,
-                        message: this.resolveCustomMessage(field, ruleName),
+                        message: this.resolveCustomMessage(field, ruleName, {}),
                         detail: {},
                     };
                 }
@@ -752,18 +817,20 @@
                     return {
                         valid: false,
                         rule: 'custom:' + ruleName,
-                        message: output.trim() || this.resolveCustomMessage(field, ruleName),
+                        message: output.trim() || this.resolveCustomMessage(field, ruleName, {}),
                         detail: {},
                     };
                 }
 
                 if (output && typeof output === 'object') {
                     if (output.valid === false) {
+                        const detail = output.detail && typeof output.detail === 'object' ? output.detail : {};
                         return {
                             valid: false,
                             rule: 'custom:' + ruleName,
-                            message: String(output.message || this.resolveCustomMessage(field, ruleName)).trim(),
-                            detail: output.detail && typeof output.detail === 'object' ? output.detail : {},
+                            // detail se pasa a resolveCustomMessage para interpolacion futura
+                            message: String(output.message || this.resolveCustomMessage(field, ruleName, detail)).trim(),
+                            detail,
                         };
                     }
 
@@ -778,6 +845,11 @@
 
         /**
          * Valida regla condicional required-if.
+         *
+         * NOTA: El valor esperado debe coincidir con el valor normalizado del campo de referencia.
+         * Para checkboxes, el valor es `field.value` cuando esta marcado (por defecto 'on').
+         * Ejemplo: data-fv-required-if="#miCheck:on"
+         *
          * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field Campo evaluado.
          * @returns {{valid: true} | {valid: false, rule: 'requiredIf', detail: Object}}
          */
@@ -897,6 +969,12 @@
 
         /**
          * Valida regla min-checked sobre grupos de checkboxes por nombre.
+         *
+         * NOTA: Para evitar errores duplicados en el resumen cuando varios checkboxes del
+         * mismo grupo comparten esta regla, validateForm deduplica errores por campo-regla
+         * antes de alimentar el summary. Asegurate de que solo el primer checkbox del grupo
+         * tenga el nodo de mensaje asociado, o usa data-fv-message-target para controlarlo.
+         *
          * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field Campo evaluado.
          * @returns {{valid: true} | {valid: false, rule: 'minChecked', detail: {min: number}}}
          */
@@ -927,6 +1005,12 @@
 
         /**
          * Valida reglas asociadas a inputs de tipo file.
+         *
+         * ADVERTENCIA DE SEGURIDAD: La validacion de tipo de archivo (`data-fv-file-types`)
+         * se basa en la extension del nombre y el MIME type reportado por el navegador.
+         * Ambos pueden ser manipulados por el cliente. Esta validacion es solo una capa de
+         * experiencia de usuario. Siempre validar el contenido real del archivo en el servidor.
+         *
          * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field Campo evaluado.
          * @returns {{valid: true} | {valid: false, rule: 'maxFiles'|'fileMaxMb'|'fileTypes', detail: Object}}
          */
@@ -971,30 +1055,25 @@
 
         /**
          * Ejecuta validaciones para un campo y aplica su estado visual.
+         * Los metodos ejecutados se derivan de RULE_METHODS, garantizando
+         * consistencia con RULE_DEFINITIONS sin mantenimiento adicional.
+         *
          * @param {HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement} field Campo evaluado.
          * @returns {ValidationSuccess|ValidationError}
          */
         validateField(field) {
             this.clearPresentation(field);
 
-            const validators = [
-                () => this.validateRequiredIf(field),
-                () => this.validateRequiredAny(field),
-                () => this.validateEquals(field),
-                () => this.validateNumberRange(field),
-                () => this.validateNoWhitespace(field),
-                () => this.validateMinChecked(field),
-                () => this.validateFileRules(field),
-                () => this.validateCustomRules(field),
-            ];
+            for (let index = 0; index < RULE_METHODS.length; index += 1) {
+                const method = RULE_METHODS[index];
+                if (typeof this[method] !== 'function') continue;
 
-            for (let index = 0; index < validators.length; index += 1) {
-                const result = validators[index]();
+                const result = this[method](field);
                 if (!result.valid) {
                     const isCustomRule = String(result.rule || '').startsWith('custom:')
                         , message = result.message
                             || (isCustomRule
-                                ? this.resolveCustomMessage(field, String(result.rule || '').slice('custom:'.length))
+                                ? this.resolveCustomMessage(field, String(result.rule || '').slice('custom:'.length), result.detail || {})
                                 : this.resolveMessage(field, result.rule, result.detail || {}));
                     this.markInvalid(field, message);
                     return {
@@ -1020,6 +1099,12 @@
 
         /**
          * Renderiza o limpia resumen global de errores.
+         * Inicializa role="alert" en el summary la primera vez para que los lectores
+         * de pantalla anuncien los errores automaticamente al actualizarse.
+         *
+         * Para grupos de checkboxes con data-fv-min-checked, se deduplica por nombre
+         * de campo para evitar mensajes repetidos en el resumen.
+         *
          * @param {ValidationError[]} errors Lista de errores acumulados.
          * @returns {void}
          */
@@ -1027,19 +1112,39 @@
             const summary = this.summaryElement;
             if (!summary) return;
 
+            // Garantiza anuncio automatico por screen readers
+            if (!summary.getAttribute('role')) {
+                summary.setAttribute('role', 'alert');
+            }
+            if (!summary.getAttribute('aria-live')) {
+                summary.setAttribute('aria-live', 'polite');
+            }
+
             if (!errors || errors.length === 0) {
                 summary.textContent = '';
                 summary.hidden = true;
                 return;
             }
 
-            const uniqueMessages = Array.from(new Set(errors.map((item) => item.message).filter(Boolean)));
+            // Deduplica errores de grupos checkbox (mismo nombre + misma regla)
+            const seen = new Set()
+                , deduped = errors.filter((item) => {
+                    if (item.rule !== 'minChecked') return true;
+                    const groupKey = 'minChecked:' + (item.field.getAttribute('name') || '');
+                    if (seen.has(groupKey)) return false;
+                    seen.add(groupKey);
+                    return true;
+                });
+
+            const uniqueMessages = Array.from(new Set(deduped.map((item) => item.message).filter(Boolean)));
             summary.innerHTML = '<ul><li>' + uniqueMessages.join('</li><li>') + '</li></ul>';
             summary.hidden = false;
         }
 
         /**
          * Valida todos los campos del formulario y emite eventos de ciclo.
+         * Almacena el resultado en `_lastErrors` para consulta posterior via `getErrors()`.
+         *
          * @param {{emitEvents?: boolean, focusFirst?: boolean}} [config={}] Configuracion de ejecucion.
          * @returns {boolean} `true` cuando el formulario no tiene errores.
          */
@@ -1071,6 +1176,7 @@
                 }
             });
 
+            this._lastErrors = errors;
             this.updateSummary(errors);
 
             if (errors.length > 0 && focusFirst) {
@@ -1096,6 +1202,15 @@
             }
 
             return errors.length === 0;
+        }
+
+        /**
+         * Retorna los errores del ultimo `validateForm` sin re-validar ni aplicar efectos visuales.
+         * Util para consultar el estado actual desde codigo externo.
+         * @returns {ValidationError[]} Copia del array de errores (inmutable externamente).
+         */
+        getErrors() {
+            return this._lastErrors.slice();
         }
 
         /**
@@ -1234,6 +1349,7 @@
                 this.clearPresentation(field);
             });
             this.updateSummary([]);
+            this._lastErrors = [];
             INSTANCES.delete(this.subject);
         }
 
@@ -1301,6 +1417,7 @@
 
         /**
          * Registra una regla custom global reutilizable por cualquier instancia.
+         * Emite console.warn si se sobreescribe una regla ya existente.
          * @param {string} ruleName Nombre de la regla (usar en `data-fv-custom`).
          * @param {Function} validator Funcion de validacion custom.
          * @returns {void}
@@ -1313,6 +1430,12 @@
 
             if (typeof validator !== 'function') {
                 throw new Error('Error: registerCustomRule requiere una funcion validator.');
+            }
+
+            if (CUSTOM_RULES.has(normalizedName)) {
+                console.warn(
+                    '[FormValidate] registerCustomRule: la regla "' + normalizedName + '" ya existe y sera sobreescrita.'
+                );
             }
 
             CUSTOM_RULES.set(normalizedName, validator);
@@ -1359,7 +1482,7 @@
             return Array.from(CUSTOM_RULES.keys());
         }
     }
-  
+
     /**
      * Limpia instancias asociadas a nodos removidos del DOM.
      * @returns {void}
@@ -1382,10 +1505,9 @@
         PENDING_REMOVALS.add(node);
         queueMicrotask(flushPendingRemovals);
     };
-    
+
     /**
      * Inicializa automaticamente las instancias del plugin y observa cambios en el DOM.
-     *
      * @returns {void}
      */
     // Handler para mutaciones DOM relacionadas con FormValidate
