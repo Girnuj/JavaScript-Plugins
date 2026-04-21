@@ -195,29 +195,6 @@
     };
 
     /**
-     * Limpia instancias asociadas a nodos removidos del DOM.
-     * @returns {void}
-     */
-    const flushPendingRemovals = () => {
-        PENDING_REMOVALS.forEach((node) => {
-            if (!node.isConnected) {
-                InfinitePager.destroyAll(node);
-            }
-            PENDING_REMOVALS.delete(node);
-        });
-    };
-
-    /**
-     * Agenda chequeo diferido para destruccion segura.
-     * @param {Element} node Nodo removido por mutacion.
-     * @returns {void}
-     */
-    const scheduleRemovalCheck = (node) => {
-        PENDING_REMOVALS.add(node);
-        queueMicrotask(flushPendingRemovals);
-    };
-
-    /**
      * Lee opciones declarativas del paginador desde `data-pager-*` y aliases legacy.
      *
      * @param {HTMLElement} element Elemento sujeto del plugin.
@@ -362,7 +339,6 @@
             this.hasMore = true;
             this.currentPage = this.options.initialPage - 1;
             this.nextPage = this.options.initialPage;
-
             this.handleClick = this.handleClick.bind(this);
             this.handleIntersect = this.handleIntersect.bind(this);
         }
@@ -875,51 +851,117 @@
         }
     }
 
-    /**
-     * Inicializa instancias presentes en DOM y habilita auto-init por MutationObserver.
-     *
-     * @returns {void}
+ /**
+     * ObserverDispatcher avanzado: permite a cada plugin observar solo el root que le corresponde,
+     * evitando múltiples MutationObserver redundantes y respetando la configuración global.
      */
-    const startAutoInit = () => {
-        InfinitePager.initAll(document);
+    if (!window.Plugins) window.Plugins = {};
+    if (!window.Plugins.ObserverDispatcher) {
+        window.Plugins.ObserverDispatcher = (function() {
+            // Mapa: rootElement => { observer, handlers[] }
+            const roots = new WeakMap();
 
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType !== 1) return;
-                    PENDING_REMOVALS.delete(node);
-                    InfinitePager.initAll(node);
-                });
+            /**
+             * Obtiene el root adecuado para un plugin según la prioridad documentada.
+             * @param {string} pluginKey Ej: 'form-request'
+             * @returns {Element}
+             */
+            function resolveRoot(pluginKey) {
+                // 1. data-pp-observe-root-{plugin}
+                const attr = 'data-pp-observe-root-' + pluginKey
+                    , specific = document.querySelector('[' + attr + ']');
+                if (specific) return specific;
 
-                mutation.removedNodes.forEach((node) => {
-                    if (node.nodeType !== 1) return;
-                    scheduleRemovalCheck(node);
-                });
-            });
-        });
-
-        const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
-        if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
-            const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim();
-            const observeRootElement = document.querySelector('[data-pp-observe-root-infinite-pager]');
-            let observeRoot = observeRootElement || document.body || document.documentElement;
-
-            if (observeRootSelector && !observeRootElement) {
-                try {
-                    observeRoot = document.querySelector(observeRootSelector) || observeRoot;
-                } catch (_error) {
-                    observeRoot = document.body || document.documentElement;
+                // 2. data-pp-observe-root en <html>
+                const html = document.documentElement
+                    , selector = html.getAttribute('data-pp-observe-root');
+                if (selector) {
+                    try {
+                        const el = document.querySelector(selector);
+                        if (el) return el;
+                    } catch (_) {}
                 }
+
+                // 3. Fallback seguro
+                return document.body || html;
             }
 
-            observer.observe(observeRoot, { childList: true, subtree: true });
-        }
+            /**
+             * Registra un handler para un plugin sobre el root adecuado.
+             * @param {string} pluginKey
+             * @param {function} handler
+             */
+            function register(pluginKey, handler) {
+                const html = document.documentElement
+                    , observeGlobal = (html.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
+                if (["false", "0", "off", "no"].includes(observeGlobal)) return; // Observación global desactivada
+
+                const root = resolveRoot(pluginKey);
+                let entry = roots.get(root);
+                if (!entry) {
+                    entry = { handlers: [], observer: null };
+                    entry.observer = new MutationObserver((mutations) => {
+                        entry.handlers.forEach(fn => {
+                            try { fn(mutations); } catch (e) {}
+                        });
+                    });
+                    entry.observer.observe(root, { childList: true, subtree: true });
+                    roots.set(root, entry);
+                }
+                entry.handlers.push(handler);
+            }
+
+            return { register };
+        })();
+    }
+
+    /**
+     * Limpia instancias cuyos nodos fueron removidos del DOM.
+     * @returns {void}
+     */
+    const flushPendingRemovals = () => {
+        PENDING_REMOVALS.forEach((node) => {
+            if (!node.isConnected) {
+                InfinitePager.destroyAll(node);
+            }
+            PENDING_REMOVALS.delete(node);
+        });
+    };
+
+    /**
+     * Agenda chequeo diferido para evitar destroy en reubicaciones temporales.
+     * @param {Element} node Nodo removido en mutacion.
+     * @returns {void}
+     */
+    const scheduleRemovalCheck = (node) => {
+        PENDING_REMOVALS.add(node);
+        queueMicrotask(flushPendingRemovals);
+    };
+
+    // Handler para mutaciones DOM (alta/baja de formularios)
+    const infinitePagerDomHandler = (mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType !== 1) return;
+                PENDING_REMOVALS.delete(node);
+                InfinitePager.initAll(node);
+            });
+            mutation.removedNodes.forEach((node) => {
+                if (node.nodeType !== 1) return;
+                scheduleRemovalCheck(node);
+            });
+        });
+    };
+
+    const startAutoInit = () => {
+        InfinitePager.initAll(document);
+        // Usar ObserverDispatcher para registrar el handler solo sobre el root adecuado
+        window.Plugins.ObserverDispatcher.register('infinite-pager', infinitePagerDomHandler);
     };
 
     document.readyState === 'loading'
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
-
-    window.Plugins = window.Plugins || {};
+        
     window.Plugins.InfinitePager = InfinitePager;
 })();

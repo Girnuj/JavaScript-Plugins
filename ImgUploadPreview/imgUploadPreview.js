@@ -361,7 +361,7 @@
     };
 
     // Handler para mutaciones DOM (alta/baja de formularios)
-    const formRequestDomHandler = (mutations) => {
+    const imgUploadPreviewDomHandler = (mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 if (node.nodeType !== 1) return;
@@ -378,7 +378,7 @@
     const startAutoInit = () => {
         ImgUploadPreview.initAll(document);
         // Usar ObserverDispatcher para registrar el handler solo sobre el root adecuado
-        window.Plugins.ObserverDispatcher.register('img-upload-preview', formRequestDomHandler);
+        window.Plugins.ObserverDispatcher.register('img-upload-preview', imgUploadPreviewDomHandler);
     };
 
 	document.readyState === 'loading' 
