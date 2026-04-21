@@ -180,15 +180,15 @@ If you want to scope this plugin `MutationObserver` to a specific container, def
 
 Plugin root priority:
 
-1. `
-data-pp-observe-root-child-select
-`
+1. `data-pp-observe-root-child-select`
 2. `data-pp-observe-root` on `<html>`
 3. `document.body`
+
+#### ℹ️ For details on the observer pattern and how to optimize automatic plugin initialization, see the section [Recommended Observer Pattern](../README.md#recommended-observer-pattern) in the main README.
 
 ## License
 
 This plugin is distributed under the MIT license.
+See the LICENSE file in the repository root for full terms.
 
 Copyright (c) 2026 Samuel Montenegro
-See the LICENSE file in the repository root for full terms.

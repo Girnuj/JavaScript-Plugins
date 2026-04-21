@@ -10,70 +10,6 @@
 (function () {
 	'use strict';
 
-	   /**
-		* ObserverDispatcher avanzado: permite a cada plugin observar solo el root que le corresponde,
-		* evitando múltiples MutationObserver redundantes y respetando la configuración global.
-		*/
-	   if (!window.Plugins) window.Plugins = {};
-	   if (!window.Plugins.ObserverDispatcher) {
-	   		window.Plugins.ObserverDispatcher = (function() {
-			   // Mapa: rootElement => { observer, handlers[] }
-			   const roots = new WeakMap();
-
-			   /**
-				* Obtiene el root adecuado para un plugin según la prioridad documentada.
-				* @param {string} pluginKey Ej: 'child-select'
-				* @returns {Element}
-				*/
-			   function resolveRoot(pluginKey) {
-				   // 1. data-pp-observe-root-{plugin}
-				   const attr = `data-pp-observe-root-${pluginKey}`
-					   , specific = document.querySelector(`[${attr}]`);
-				   if (specific) return specific;
-
-				   // 2. data-pp-observe-root en <html>
-				   const html = document.documentElement
-				   	   , selector = html.getAttribute('data-pp-observe-root');
-				   if (selector) {
-					   try {
-						   const el = document.querySelector(selector);
-						   if (el) return el;
-					   } catch (_) {}
-				   }
-
-				   // 3. Fallback seguro
-				   return document.body || html;
-			   }
-
-			   /**
-				* Registra un handler para un plugin sobre el root adecuado.
-				* @param {string} pluginKey
-				* @param {function} handler
-				*/
-			   function register(pluginKey, handler) {
-				   const html = document.documentElement
-				       , observeGlobal = (html.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
-				   if (["false", "0", "off", "no"].includes(observeGlobal)) return; // Observación global desactivada
-
-				   const root = resolveRoot(pluginKey);
-				   let entry = roots.get(root);
-				   if (!entry) {
-					   entry = { handlers: [], observer: null };
-					   entry.observer = new MutationObserver((mutations) => {
-						   entry.handlers.forEach(fn => {
-							   try { fn(mutations); } catch (e) {}
-						   });
-					   });
-					   entry.observer.observe(root, { childList: true, subtree: true });
-					   roots.set(root, entry);
-				   }
-				   entry.handlers.push(handler);
-			   }
-
-			   return { register };
-		   })();
-	   }
-
 	/**
 	 * Selector declarativo del select padre que dispara la carga de opciones.
 	 * @type {string}
@@ -271,29 +207,6 @@
 			: parseBoolean(mergedOptions.retainChildValue);
 
 		return mergedOptions;
-	};
-
-	/**
-	 * Destruye instancias asociadas a nodos realmente removidos del DOM.
-	 * @returns {void}
-	 */
-	const flushPendingRemovals = () => {
-		PENDING_REMOVALS.forEach((node) => {
-			if (!node.isConnected) {
-				ChildSelect.destroyAll(node);
-			}
-			PENDING_REMOVALS.delete(node);
-		});
-	};
-
-	/**
-	 * Agenda una comprobacion diferida para evitar destruir nodos temporalmente movidos.
-	 * @param {Element} node Nodo removido en la mutacion.
-	 * @returns {void}
-	 */
-	const scheduleRemovalCheck = (node) => {
-		PENDING_REMOVALS.add(node);
-		queueMicrotask(flushPendingRemovals);
 	};
 
 	/**
@@ -710,11 +623,97 @@
 	}
 
 	/**
+	 * Destruye instancias asociadas a nodos realmente removidos del DOM.
+	 * @returns {void}
+	 */
+	const flushPendingRemovals = () => {
+		PENDING_REMOVALS.forEach((node) => {
+			if (!node.isConnected) {
+				ChildSelect.destroyAll(node);
+			}
+			PENDING_REMOVALS.delete(node);
+		});
+	};
+
+	/**
+	 * Agenda una comprobacion diferida para evitar destruir nodos temporalmente movidos.
+	 * @param {Element} node Nodo removido en la mutacion.
+	 * @returns {void}
+	 */
+	const scheduleRemovalCheck = (node) => {
+		PENDING_REMOVALS.add(node);
+		queueMicrotask(flushPendingRemovals);
+	};
+
+	/**
+	* ObserverDispatcher avanzado: permite a cada plugin observar solo el root que le corresponde,
+	* evitando múltiples MutationObserver redundantes y respetando la configuración global.
+	*/
+	if (!window.Plugins) window.Plugins = {};
+	if (!window.Plugins.ObserverDispatcher) {
+		window.Plugins.ObserverDispatcher = (function() {
+			// Mapa: rootElement => { observer, handlers[] }
+			const roots = new WeakMap();
+
+			/**
+			* Obtiene el root adecuado para un plugin según la prioridad documentada.
+			* @param {string} pluginKey Ej: 'child-select'
+			* @returns {Element}
+			*/
+			function resolveRoot(pluginKey) {
+				// 1. data-pp-observe-root-{plugin}
+				const attr = `data-pp-observe-root-${pluginKey}`
+					, specific = document.querySelector(`[${attr}]`);
+				if (specific) return specific;
+
+				// 2. data-pp-observe-root en <html>
+				const html = document.documentElement
+					, selector = html.getAttribute('data-pp-observe-root');
+				if (selector) {
+					try {
+						const el = document.querySelector(selector);
+						if (el) return el;
+					} catch (_) {}
+				}
+
+				// 3. Fallback seguro
+				return document.body || html;
+			}
+
+			/**
+			* Registra un handler para un plugin sobre el root adecuado.
+			* @param {string} pluginKey
+			* @param {function} handler
+			*/
+			function register(pluginKey, handler) {
+				const html = document.documentElement
+					, observeGlobal = (html.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
+				if (["false", "0", "off", "no"].includes(observeGlobal)) return; // Observación global desactivada
+
+				const root = resolveRoot(pluginKey);
+				let entry = roots.get(root);
+				if (!entry) {
+					entry = { handlers: [], observer: null };
+					entry.observer = new MutationObserver((mutations) => {
+						entry.handlers.forEach(fn => {
+							try { fn(mutations); } catch (e) {}
+						});
+					});
+					entry.observer.observe(root, { childList: true, subtree: true });
+					roots.set(root, entry);
+				}
+				entry.handlers.push(handler);
+			}
+
+			return { register };
+		})();
+	}
+
+	/**
 	 * Inicializa automaticamente instancias del plugin y observa cambios en el DOM.
 	 *
 	 * @returns {void}
 	 */
-
 	const childSelectDomHandler = (mutations) => {
 		mutations.forEach((mutation) => {
 			mutation.addedNodes.forEach((node) => {
