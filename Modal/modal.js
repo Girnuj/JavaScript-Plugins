@@ -10,26 +10,14 @@
 (function () {
     'use strict';
 
-    /**
-     * Nombre estandar de tecla para cierre por teclado.
-     * @type {string}
-     */
     const ESCAPE_KEY = 'Escape'
-        /** @type {string} */
         , CLASS_NAME_OPENED = 'modal-opened'
-        /** @type {string} */
         , SELECTOR_MODAL_SUBJECT = '[role="dialog"],dialog,[data-role="modal"]'
-        /** @type {string} */
         , SELECTOR_MODAL_BACKDROP = '[data-modal="backdrop"]'
-        /** @type {string} */
         , SELECTOR_MODAL_TOGGLE = '[data-modal="toggle"]'
-        /** @type {string} */
         , SELECTOR_MODAL_TOGGLE_TARGET = 'data-modal-target'
-        /** @type {string} */
         , SELECTOR_MODAL_DISMISS = '[data-modal="dismiss"]'
-        /** @type {string} */
         , EVENT_HIDDEN = 'hidden.plugin.modal'
-        /** @type {string} */
         , EVENT_SHOWN = 'shown.plugin.modal'
         /**
          * Registro de instancias por modal.
@@ -118,25 +106,6 @@
             bubbles: true,
             detail: { relatedTarget },
         }));
-    };
-
-    /**
-     * Procesa nodos removidos y destruye instancias de modal huérfanas.
-     *
-     * @returns {void}
-     */
-    const flushPendingRemovals = () => {
-        PENDING_REMOVALS.forEach((node) => {
-            if (!node.isConnected) {
-                Modal.destroyAll(node);
-            }
-            PENDING_REMOVALS.delete(node);
-        });
-    };
-
-    const scheduleRemovalCheck = (node) => {
-        PENDING_REMOVALS.add(node);
-        queueMicrotask(flushPendingRemovals);
     };
 
     /**
@@ -431,51 +400,122 @@
     };
 
     /**
-     * Inicializa modales automaticamente y activa observacion de altas/bajas en DOM.
-     *
-     * @returns {void}
+     * ObserverDispatcher avanzado: permite a cada plugin observar solo el root que le corresponde,
+     * evitando múltiples MutationObserver redundantes y respetando la configuración global.
      */
-    const startAutoInit = () => {
-        Modal.initAll(document);
-        document.addEventListener('click', handleToggleClick);
+    if (!window.Plugins) window.Plugins = {};
+    if (!window.Plugins.ObserverDispatcher) {
+        window.Plugins.ObserverDispatcher = (function() {
+            // Mapa: rootElement => { observer, handlers[] }
+            const roots = new WeakMap();
 
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType !== 1) return;
-                    PENDING_REMOVALS.delete(node);
-                    Modal.initAll(node);
-                });
+            /**
+             * Obtiene el root adecuado para un plugin según la prioridad documentada.
+             * @param {string} pluginKey Ej: 'modal'
+             * @returns {Element}
+             */
+            function resolveRoot(pluginKey) {
+                // 1. data-pp-observe-root-{plugin}
+                const attr = 'data-pp-observe-root-' + pluginKey
+                    , specific = document.querySelector('[' + attr + ']');
+                if (specific) return specific;
 
-                mutation.removedNodes.forEach((node) => {
-                    if (node.nodeType !== 1) return;
-                    scheduleRemovalCheck(node);
-                });
-            });
-        });
-
-        const observeGlobal = (document.documentElement.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
-        if (!['false', '0', 'off', 'no'].includes(observeGlobal)) {
-            const observeRootSelector = (document.documentElement.getAttribute('data-pp-observe-root') || '').trim();
-            const observeRootElement = document.querySelector('[data-pp-observe-root-modal]');
-            let observeRoot = observeRootElement || document.body || document.documentElement;
-
-            if (observeRootSelector && !observeRootElement) {
-                try {
-                    observeRoot = document.querySelector(observeRootSelector) || observeRoot;
-                } catch (_error) {
-                    observeRoot = document.body || document.documentElement;
+                // 2. data-pp-observe-root en <html>
+                const html = document.documentElement
+                    , selector = html.getAttribute('data-pp-observe-root');
+                if (selector) {
+                    try {
+                        const el = document.querySelector(selector);
+                        if (el) return el;
+                    } catch (_) {}
                 }
+
+                // 3. Fallback seguro
+                return document.body || html;
             }
 
-            observer.observe(observeRoot, { childList: true, subtree: true });
-        }
+            /**
+             * Registra un handler para un plugin sobre el root adecuado.
+             * @param {string} pluginKey
+             * @param {function} handler
+             */
+            function register(pluginKey, handler) {
+                const html = document.documentElement
+                    , observeGlobal = (html.getAttribute('data-pp-observe-global') || '').trim().toLowerCase();
+                if (["false", "0", "off", "no"].includes(observeGlobal)) return; // Observación global desactivada
+
+                const root = resolveRoot(pluginKey);
+                let entry = roots.get(root);
+                if (!entry) {
+                    entry = { handlers: [], observer: null };
+                    entry.observer = new MutationObserver((mutations) => {
+                        entry.handlers.forEach(fn => {
+                            try { fn(mutations); } catch (e) {}
+                        });
+                    });
+                    entry.observer.observe(root, { childList: true, subtree: true });
+                    roots.set(root, entry);
+                }
+                entry.handlers.push(handler);
+            }
+
+            return { register, resolveRoot };
+        })();
+    }
+
+    /**
+     * Limpia instancias cuyos nodos fueron removidos del DOM.
+     * @returns {void}
+     */
+    const flushPendingRemovals = () => {
+        PENDING_REMOVALS.forEach((node) => {
+            if (!node.isConnected) {
+                Modal.destroyAll(node);
+            }
+            PENDING_REMOVALS.delete(node);
+        });
     };
+
+    /**
+     * Agenda chequeo diferido para evitar destroy en reubicaciones temporales.
+     * @param {Element} node Nodo removido en mutacion.
+     * @returns {void}
+     */
+    const scheduleRemovalCheck = (node) => {
+        PENDING_REMOVALS.add(node);
+        queueMicrotask(flushPendingRemovals);
+    };
+
+    // Handler para mutaciones DOM (alta/baja de modales)
+    const modalDomHandler = (mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType !== 1) return;
+                PENDING_REMOVALS.delete(node);
+                Modal.initAll(node);
+            });
+            mutation.removedNodes.forEach((node) => {
+                if (node.nodeType !== 1) return;
+                scheduleRemovalCheck(node);
+            });
+        });
+    };
+
+
+    const startAutoInit = () => {
+        const root = window.Plugins.ObserverDispatcher 
+            && window.Plugins.ObserverDispatcher.resolveRoot
+            && window.Plugins.ObserverDispatcher.resolveRoot('modal');  
+
+        Modal.initAll(root);
+        root.addEventListener('click', handleToggleClick);
+        window.Plugins.ObserverDispatcher.register('modal', modalDomHandler);
+    };
+
 
     document.readyState === 'loading'
         ? document.addEventListener('DOMContentLoaded', startAutoInit, { once: true })
         : startAutoInit();
 
-    window.Plugins = window.Plugins || {};
     window.Plugins.Modal = Modal;
 })();

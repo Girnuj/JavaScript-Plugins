@@ -860,7 +860,7 @@
         }
     }
 
-   /**
+    /**
      * ObserverDispatcher avanzado: permite a cada plugin observar solo el root que le corresponde,
      * evitando múltiples MutationObserver redundantes y respetando la configuración global.
      */
