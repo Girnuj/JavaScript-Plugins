@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Test Integración ReplaceMe + TemplateRenderizer</title>
+  <link rel="stylesheet" href="../TestPluginCommon/test-plugin-common.css" />
+  <style>
+    .remote-box {
+      border-left: 4px solid #4a90e2;
+      background: #9fc4ed;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 1em;
+    }
+    .panel { margin-bottom: 2em; }
+    .template { display: none; }
+  </style>
+</head>
+<body>
+  <h1>Integración ReplaceMe + TemplateRenderizer</h1>
+  <p>Este test reemplaza un contenedor usando ReplaceMe (modo JSON) y renderiza los datos usando TemplateRenderizer.</p>
+
+  <section class="panel">
+    <button
+      type="button"
+      data-role="replace-me"
+      data-replace-me-src="/demo/integration-json"
+      data-replace-me-mode="json"
+      data-replace-me-target="#render-container"
+      data-replace-me-json-html="html"
+      data-replace-me-json-redirect="nextUrl">
+      Cargar datos y renderizar
+    </button>
+  </section>
+
+  <!-- Contenedor que será reemplazado -->
+  <div id="render-container" class="remote-box">
+    <b>Esperando datos...</b>
+  </div>
+
+  <!-- Plantilla oculta para TemplateRenderizer -->
+  <template id="user-template">
+    <div>
+      <h3>Usuario: {{user.name}}</h3>
+      <p>Email: {{user.email}}</p>
+      <p>Rol: {{user.role}}</p>
+    </div>
+  </template>
+
+  <script src="../ReplaceMe/replaceMe.min.js"></script>
+  <script src="../TemplateRenderizer/templateRenderizer.min.js"></script>
+  <script>
+    // Simulador de endpoint JSON para integración
+    (function () {
+      const originalFetch = window.fetch.bind(window);
+      window.fetch = async function (input, init) {
+        const url = typeof input === 'string' ? input : input.url;
+        const requestMethod = (init && init.method ? init.method : 'GET').toUpperCase();
+        if (url === '/demo/integration-json' && requestMethod === 'POST') {
+          const json = {
+            html: '<div id="render-container" class="remote-box"></div>', // contenedor vacío, será renderizado luego
+            user: {
+              name: 'Ada Lovelace',
+              email: 'ada@lovelace.com',
+              role: 'Pionera de la computación'
+            },
+            nextUrl: null
+          };
+          return new Response(JSON.stringify(json), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          });
+        }
+        return originalFetch(input, init);
+      };
+    })();
+
+    // Renderizar con TemplateRenderizer tras el reemplazo
+    document.addEventListener('replace-me:success', function (e) {
+      // El JSON original está en e.detail.raw
+      if (e.detail.raw && e.detail.raw.user) {
+        const renderContainer = document.getElementById('render-container');
+        if (renderContainer) {
+          const renderer = new window.Plugins.TemplateRenderizer({
+            templateSelector: '#user-template'
+          });
+          renderContainer.innerHTML = renderer.render({ user: e.detail.raw.user });
+        }
+      }
+    });
+  </script>
+</body>
+</html>

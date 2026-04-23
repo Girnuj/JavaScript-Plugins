@@ -65,6 +65,12 @@ Combinacion recomendada en ese ejemplo:
 
 Regla clave: si combinas plugins de red, define un solo owner del request real y usa eventos custom (`before/success/error/complete`) para puentes entre plugins.
 
+## Otro ejemplo de integración: ReplaceMe + TemplateRenderizer
+
+El archivo [PluginIntegration/test-replaceme-templaterenderizer.html](PluginIntegration/test-replaceme-templaterenderizer.html) muestra cómo orquestar ReplaceMe (para cargar datos y reemplazar un contenedor HTML usando JSON) junto con TemplateRenderizer (para renderizar dinámicamente los datos recibidos usando una plantilla HTML declarativa).
+
+Este patrón es útil para frontends que consumen datos de endpoints que devuelven HTML , JSON con HTML embebido o solo JSON, permitiendo una integración sencilla sin necesidad de frameworks completos de renderizado.
+
 ## Versiones Minificadas
 
 Cada plugin incluye su version minificada (`*.min.js`) dentro de su propia carpeta.

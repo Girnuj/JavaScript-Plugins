@@ -2,11 +2,12 @@
 
 Este directorio contiene un ejemplo practico de como orquestar varios plugins en una sola pantalla sin convertirlos en un plugin monolitico.
 
-Archivo principal:
+Archivos principales:
 - test-plugin-integration.html
 
-Archivo adicional (resiliencia de red):
+Archivos adicionales:
 - test-plugin-integration-offline-action-queue.html
+- test-replaceme-templaterenderizer.html (ejemplo de integración ReplaceMe + TemplateRenderizer)
 
 ## Plugins combinados
 
@@ -37,10 +38,20 @@ Con este enfoque se evita duplicar responsabilidades y es mas facil depurar.
 5. RequestState refleja estado del ciclo.
 6. NotificationPush comunica resultado al usuario.
 
+## Otro ejemplo de integración: ReplaceMe + TemplateRenderizer
+
+El archivo `test-replaceme-templaterenderizer.html` muestra cómo orquestar ReplaceMe (para cargar datos y reemplazar un contenedor usando JSON) junto con TemplateRenderizer (para renderizar dinámicamente los datos recibidos usando una plantilla HTML declarativa).
+
+Flujo:
+1. ReplaceMe reemplaza el contenedor objetivo con HTML vacío y datos JSON.
+2. Al recibir el JSON, TemplateRenderizer renderiza los datos usando la plantilla definida en el HTML.
+
+Este patrón es útil para microfrontends, integración de datos y separación de responsabilidades entre plugins.
+
 ## Tips para combinar plugins
 
 - Evita tener dos plugins enviando el mismo request.
-- Usa eventos custom para puentes entre plugins (before/success/error/complete).
+- Usa eventos custom para puentes entre plugins (`before/success/error/complete`).
 - Manten targets de UI separados para estado, respuesta y notificaciones.
 - En demos locales, usa mocks de fetch para no depender de backend.
 

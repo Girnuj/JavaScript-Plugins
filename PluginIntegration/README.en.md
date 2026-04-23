@@ -7,6 +7,7 @@ Main file:
 
 Additional file (network resiliency):
 - test-plugin-integration-offline-action-queue.html
+- test-replaceme-templaterenderizer.html (example of ReplaceMe + TemplateRenderizer integration)
 
 ## Combined Plugins
 
@@ -36,6 +37,17 @@ This approach avoids duplicated responsibilities and makes debugging easier.
 4. FormRequest performs the request.
 5. RequestState reflects the lifecycle state.
 6. NotificationPush communicates the result to the user.
+
+## Another integration example: ReplaceMe + TemplateRenderizer
+
+The `test-replaceme-templaterenderizer.html` file shows how to orchestrate ReplaceMe (to load data and replace a container using JSON) together with TemplateRenderizer (to dynamically render the received data using a declarative HTML template).
+
+Flow:
+1. ReplaceMe replaces the target container with empty HTML and JSON data.
+
+2. Upon receiving the JSON, TemplateRenderizer renders the data using the template defined in the HTML.
+
+This pattern is useful for microfrontends, data integration, and separation of responsibilities between plugins.
 
 ## Tips For Combining Plugins
 

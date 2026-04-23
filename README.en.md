@@ -65,6 +65,12 @@ Recommended composition in that example:
 
 Key rule: when combining network-related plugins, keep a single real request owner and use custom lifecycle events (`before/success/error/complete`) as bridges between plugins.
 
+## Another integration example: ReplaceMe + TemplateRenderizer
+
+The file [PluginIntegration/test-replaceme-templaterenderizer.html](PluginIntegration/test-replaceme-templaterenderizer.html) shows how to orchestrate ReplaceMe (to load data and replace an HTML container using JSON) together with TemplateRenderizer (to dynamically render the received data using a declarative HTML template).
+
+This pattern is useful for frontends that consume data from endpoints that return HTML, JSON with embedded HTML, or just JSON, allowing for simple integration without the need for full rendering frameworks.
+
 ## Minified Versions
 
 Each plugin includes a minified build (`*.min.js`) inside its own folder.
