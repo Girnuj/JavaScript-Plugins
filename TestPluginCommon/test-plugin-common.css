@@ -91,7 +91,6 @@ textarea {
 .result-box,
 .summary,
 .confirm-card,
-.confirm-box,
 .designer-panel {
   border: 1px solid var(--tp-border);
   border-radius: var(--tp-radius);

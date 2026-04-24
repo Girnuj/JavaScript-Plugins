@@ -134,6 +134,11 @@
             this.isBound = false;
             this.handleClick = this.handleClick.bind(this);
             this.handleKeydown = this.handleKeydown.bind(this);
+            /**
+             * Elemento que disparó la apertura del modal (para devolver el foco al cerrar).
+             * @type {HTMLElement|null}
+             */
+            this._opener = null;
         }
 
         /**
@@ -227,6 +232,10 @@
 
             raiseCustomEvent(this.subject, EVENT_SHOWN, relatedTarget);
             this.focusFirstElement();
+            // Guardar el opener si es un HTMLElement
+            relatedTarget instanceof HTMLElement
+                ? this._opener = relatedTarget
+                : this._opener = null;
         }
 
         /**
@@ -252,6 +261,13 @@
 
             this.unbind();
             raiseCustomEvent(this.subject, EVENT_HIDDEN, relatedTarget);
+            // Devolver el foco al opener si existe y sigue en el DOM
+            if (this._opener instanceof HTMLElement && document.contains(this._opener)) {
+                setTimeout(() => {
+                    try { this._opener.focus(); } catch (e) {}
+                }, 0);
+            }
+            this._opener = null;
         }
 
         /**
