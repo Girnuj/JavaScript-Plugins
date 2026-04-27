@@ -97,7 +97,6 @@ En ambos casos, el plugin usa `fetch` para cargar datos y se inicializa automati
 
 ## Atributos `data-*` soportados
 
-- `data-role="parent-select"`: marca el `<select>` como padre para activar el plugin.
 - `data-role="parent-select"`: marca el `<select>` como padre para activar el plugin por auto-init. Estado: **requerido en auto-inicializacion**.
 - `data-child-select`: selector CSS del `<select>` hijo que sera rellenado. Estado: **requerido**.
 - `data-children-url`: endpoint que devuelve opciones para el hijo segun el valor del padre. Estado: **requerido**.
