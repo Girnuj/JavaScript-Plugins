@@ -142,7 +142,7 @@
         const style = document.createElement('style');
         style.id = STYLE_TAG_ID;
         style.textContent = ''
-            + '#'+ TOAST_CONTAINER_ID +' { position: fixed; top: 16px; right: 16px; width: min(360px, calc(100vw - 32px)); z-index: 99999; display: grid; gap: 10px; pointer-events: none; }'
+            + '#' + TOAST_CONTAINER_ID + ' { position: fixed; top: 16px; right: 16px; width: min(360px, calc(100vw - 32px)); z-index: 99999; display: grid; gap: 10px; pointer-events: none; }'
             + '.np-toast { pointer-events: auto; position: relative; border-radius: 10px; border: 1px solid #d7deeb; background: #ffffff; color: #1b263b; box-shadow: 0 12px 24px rgba(15, 23, 42, 0.14); padding: 10px 36px 10px 12px; display: grid; gap: 6px; animation: np-toast-in .2s ease-out; }'
             + '.np-toast__top { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; }'
             + '.np-toast__image { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; }'
@@ -392,6 +392,7 @@
             });
 
             receiver.dispatchEvent(new CustomEvent('push.plugin.notificationPush', {
+                bubbles: true,
                 detail: {
                     payload,
                     trigger: this.subject,
@@ -442,6 +443,7 @@
 
             this.options.onShown && this.options.onShown(payload, this.subject);
             this.subject.dispatchEvent(new CustomEvent('shown.plugin.notificationPush', {
+                bubbles: true,
                 detail: {
                     payload,
                     trigger: this.subject,
@@ -486,6 +488,7 @@
 
             this.options.onSent && this.options.onSent(payload, response, this.subject);
             this.subject.dispatchEvent(new CustomEvent('sent.plugin.notificationPush', {
+                bubbles: true,
                 detail: {
                     payload,
                     response,
@@ -505,6 +508,7 @@
             const payload = this.buildPayload()
                 , beforeEvent = new CustomEvent('before.plugin.notificationPush', {
                     cancelable: true,
+                    bubbles: true,
                     detail: {
                         payload,
                         trigger: this.subject,
@@ -528,6 +532,7 @@
             } catch (error) {
                 this.options.onError && this.options.onError(error, payload, this.subject);
                 this.subject.dispatchEvent(new CustomEvent('error.plugin.notificationPush', {
+                    bubbles: true,
                     detail: {
                         error,
                         payload,
@@ -668,7 +673,7 @@
      */
     if (!window.Plugins) window.Plugins = {};
     if (!window.Plugins.ObserverDispatcher) {
-        window.Plugins.ObserverDispatcher = (function() {
+        window.Plugins.ObserverDispatcher = (function () {
             // Mapa: rootElement => { observer, handlers[] }
             const roots = new WeakMap();
 
@@ -690,7 +695,7 @@
                     try {
                         const el = document.querySelector(selector);
                         if (el) return el;
-                    } catch (_) {}
+                    } catch (_) { }
                 }
 
                 // 3. Fallback seguro
@@ -713,7 +718,7 @@
                     entry = { handlers: [], observer: null };
                     entry.observer = new MutationObserver((mutations) => {
                         entry.handlers.forEach(fn => {
-                            try { fn(mutations); } catch (e) {}
+                            try { fn(mutations); } catch (e) { }
                         });
                     });
                     entry.observer.observe(root, { childList: true, subtree: true });
@@ -777,6 +782,6 @@
     document.readyState === 'loading'
         ? document.addEventListener('DOMContentLoaded', bootstrap, { once: true })
         : bootstrap();
-        
+
     window.Plugins.NotificationPush = NotificationPush;
 })();
